@@ -1,0 +1,30 @@
+{
+  "name": "ecf-202212-ob-express-react",
+  "version": "1.0.0",
+  "description": "Application Web réalisée dans le cadre de l'examen en cours de formation Studi (promo Gefland - Décembre 2022)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pantaflex44/ECF-202212-OB-Express-React.git"
+  },
+  "keywords": [
+    "react",
+    "javascript",
+    "express",
+    "js",
+    "studi",
+    "sport",
+    "examen",
+    "ecf",
+    "gefland"
+  ],
+  "author": "Christophe LEMOINE",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pantaflex44/ECF-202212-OB-Express-React/issues"
+  },
+  "homepage": "https://github.com/pantaflex44/ECF-202212-OB-Express-React#readme"
+}
