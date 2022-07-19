@@ -212,12 +212,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// création d'un serveur HTTPS et lancement de l'écoute sur le port souhaité (8443 par défaut)
-const port = process.env.PORT || 8443;
-const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(port, () => {
-    console.log(`Server starting and listening on port ${port}`);
-});
+// création et lancement du serveur sur le port souhaité (3001 par défaut)
+const port = process.env.PORT || 3001;
+
+if (process.env.USE_LOCAL_HTTPS) {
+    const httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(port, () => {
+        console.log(`Server starting and listening on port ${port}`);
+    });
+} else {
+    app.listen(port, () => console.log(`Server starting and listening on port ${port}`));
+}
 ```
 
 ### Frontend : Un peu de réactivité
@@ -291,7 +296,17 @@ Puis, effectuer l'installation des paquets NPM:
 $ npm install
 ```
 
-Pour finir il faut créer la base de données:
+Prochaine étape, création des certificats locaux pour utiliser le protocole HTTPS:
+
+```bash
+$ cd certs
+$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./server.key -out server.crt
+$ sudo chmod 644 server.crt
+$ sudo chmod 644 server.key
+$ cd ..
+```
+
+Pour finir, il faut créer la base de données:
 
 ```bash
 $ cd data

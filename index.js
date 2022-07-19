@@ -34,11 +34,13 @@ app.use(cookieParser());
 app.use("/api/auth", require("./controllers/auth"));
 app.use("/api/story", require("./controllers/story"));*/
 
-const port = process.env.PORT || 8443;
-const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(port, () => {
-    console.log(`Server starting and listening on port ${port}`);
-});
+const port = process.env.PORT || 3001;
 
-/*const port = process.env.PORT || 3001;
-app.listen(port, () => console.log(`Listening on port ${port}`));*/
+if (process.env.USE_LOCAL_HTTPS) {
+    const httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(port, () => {
+        console.log(`Server starting and listening on port ${port}`);
+    });
+} else {
+    app.listen(port, () => console.log(`Server starting and listening on port ${port}`));
+}
