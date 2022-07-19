@@ -1,30 +1,49 @@
 {
-  "name": "ecf-202212-ob-express-react",
-  "version": "1.0.0",
-  "description": "Application Web réalisée dans le cadre de l'examen en cours de formation Studi (promo Gefland - Décembre 2022)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pantaflex44/ECF-202212-OB-Express-React.git"
-  },
-  "keywords": [
-    "react",
-    "javascript",
-    "express",
-    "js",
-    "studi",
-    "sport",
-    "examen",
-    "ecf",
-    "gefland"
-  ],
-  "author": "Christophe LEMOINE",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/pantaflex44/ECF-202212-OB-Express-React/issues"
-  },
-  "homepage": "https://github.com/pantaflex44/ECF-202212-OB-Express-React#readme"
+    "name": "credible",
+    "version": "1.0.0",
+    "description": "Application Web réalisée dans le cadre de l'examen en cours de formation Studi (promo Gefland - Décembre 2022)",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node app",
+        "server": "nodemon",
+        "client": "npm run dev --prefix ui",
+        "dev": "cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\"",
+        "build": "cross-env NODE_ENV=production npm run build --prefix ui"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/pantaflex44/ECF-202212-OB-Express-React.git"
+    },
+    "keywords": ["react", "javascript", "express", "js", "studi", "sport", "examen", "ecf", "gefland"],
+    "author": "Christophe LEMOINE",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/pantaflex44/ECF-202212-OB-Express-React/issues"
+    },
+    "homepage": "https://github.com/pantaflex44/ECF-202212-OB-Express-React#readme",
+    "dependencies": {
+        "blueimp-md5": "^2.19.0",
+        "body-parser": "^1.20.0",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "express-rate-limit": "^6.4.0",
+        "fs": "^0.0.1-security",
+        "helmet": "^5.1.0",
+        "html-react-parser": "^3.0.1",
+        "https": "^1.0.0",
+        "jsdom": "^20.0.0",
+        "jsonwebtoken": "^8.5.1",
+        "nodemailer": "^6.7.7",
+        "nodemailer-html-to-text": "^3.2.0",
+        "nodemailer-plugin-inline-base64": "^2.1.1",
+        "path": "^0.12.7",
+        "sqlite3": "^5.0.9"
+    },
+    "devDependencies": {
+        "concurrently": "^7.2.2"
+    }
 }

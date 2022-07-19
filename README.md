@@ -130,14 +130,94 @@ A ce sujet, la licence choisie pour ce projet est la **licence MIT**.
 
 ## Ajout des premières technologies
 
-Je ne préciserai pas chaque entrée dans le fichier **.gitignore**, mais, par exemple, les répertoires "node_modules" en feront partie.
+Je ne préciserai pas chaque entrée dans le fichier **.gitignore**, mais, par exemple, les répertoires *node_modules* en feront partie.
 
 ### Backend : API - ExpressJs à la rescousse
 
-Ajout d'ExpressJs au projet:
+Ajout d'ExpressJs et différents paquets NPM au projet:
 
 ```bash
+$ npm install https --save
 $ npm install express --save
+$ npm install express-rate-limit --save
+$ npm install cookie-parser --save
+$ npm install body-parser --save
+$ npm install blueimp-md5 --save
+$ npm install cors --save
+$ npm install dotenv --save
+$ npm install fs --save
+$ npm install helmet --save
+$ npm install html-react-parser --save
+$ npm install jsdom --save
+$ npm install jsonwebtoken --save
+$ npm install nodemailer --save
+$ npm install nodemailer-html-to-text --save
+$ npm install nodemailer-plugin-inline-base64 --save
+$ npm install path --save
+$ npm install sqlite3 --save
+...
+```
+
+L'API sera développée en utilisant l'outil **Postman**.
+
+L'API ne sera accessible que par l'utilisation du **protocole HTTPS**. Pour ce faire, dans le dossier *certs*, je compose la ligne de commande suivante:
+
+```bash
+$ cd certs
+$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./server.key -out server.crt
+$ sudo chmod 644 server.crt
+$ sudo chmod 644 server.key
+$ cd ..
+```
+
+Une fois le certificat provisoire créé, j'écris les première ligne de code permettant de lancer un serveur ExpressJs faisant fonctionner l'ensemble de mon API:
+
+```javascript
+"use strict";
+
+var fs = require("fs");
+var https = require("https");
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const rateLimit = require("express-rate-limit");
+
+// chargement du fichier d'environement
+require("dotenv").config({ path: `./.env.${process.env.NODE_ENV}` });
+
+// récupération du certificat de sécurité pour la connexion HTTPS
+var privateKey = fs.readFileSync("./certs/server.key", "utf8");
+var certificate = fs.readFileSync("./certs/server.crt", "utf8");
+var credentials = { key: privateKey, cert: certificate };
+
+// initialisation de l'API
+const app = express();
+
+// middleware limitant le nombre de connexions pour la même IP dans un temps donné
+app.use(
+    rateLimit({
+        windowMs: process.env.RATE_LIMIT_DELAY,
+        max: process.env.RATE_LIMIT_COUNTER,
+        standardHeaders: true,
+        legacyHeaders: false
+    })
+);
+
+// middleware pour la gestion du partage des ressources entre origines multiples
+app.use(cors());
+
+// divers middleware utiles pour le traitement des requètes et réponses
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// création d'un serveur HTTPS et lancement de l'écoute sur le port souhaité (8443 par défaut)
+const port = process.env.PORT || 8443;
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(port, () => {
+    console.log(`Server starting and listening on port ${port}`);
+});
 ```
 
 ### Frontend : Un peu de réactivité
@@ -149,6 +229,7 @@ $ mkdir ui
 $ cd ui
 $ git clone https://github.com/pantaflex44/QuickParcelProject .
 $ rm -rf .git
+$ cd ..
 ```
 
 Puis, mise à jour des packages inclus:
@@ -162,5 +243,89 @@ Pour finir, installation des packages du projet basé sur QPP:
 
 ```bash
 $ npm install
-$ npm install --save-dev parcel
+$ npm install parcel --save-dev
+```
+
+### Package.json de l'API (package.json principal)
+
+Une fois les techonologies principales installées et configurées, je modifie le fichier **package.json** pour ajouter des scripts utiles au fonctionnement de l'application.
+
+Pour les besoins de la modification, j'installe le paquet NPM *cross-env*:
+
+```bash
+$ npm install cross-env --save
+$ npm install concurrently --save-dev
+```
+
+La section **scripts** modifiée du fichier package.json:
+
+```json
+{
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node app",
+        "server": "nodemon",
+        "client": "npm run dev --prefix ui",
+        "dev": "cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\"",
+        "build": "cross-env NODE_ENV=production npm run build --prefix ui"
+    },
+}
+```
+
+Le script permettant de lancer les tests sur l'application sera modifié ultérieurement.
+
+## Installation et Utilisation de l'application
+
+Pour télécharger l'application **Credible**:
+
+```bash
+$ mkdir credible
+$ cd credible
+$ git clone https://github.com/pantaflex44/ECF-202212-OB-Express-React .
+$ rm -rf .git
+```
+
+Puis, effectuer l'installation des paquets NPM:
+
+```bash
+$ npm install
+```
+
+Pour finir il faut créer la base de données:
+
+```bash
+$ cd data
+$ sqlite3 app.db
+
+sqlite> .read app.sql
+Ok.
+sqlite> exit
+
+$ cd ..
+```
+
+### Les commandes NPM
+
+Démarrer le serveur (la partie backend de l'application):
+
+```bash
+$ npm run server
+```
+
+Lancer le client (la partie frontend de l'application):
+
+```bash
+$ npm run client
+```
+
+Lancer le projet en mode développement:
+
+```bash
+$ npm run dev
+```
+
+Compiler le projet:
+
+```bash
+$ npm run build
 ```
