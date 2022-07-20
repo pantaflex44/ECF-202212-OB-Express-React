@@ -1,18 +1,27 @@
 "use strict";
 
-var fs = require("fs");
-var https = require("https");
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 
-require("dotenv").config({ path: `./.env.${process.env.NODE_ENV}` });
+if (process.env.NODE_ENV === "development") console.warn("\x1b[33m%s\x1b[0m", "API start in developement mode!\n");
 
-var privateKey = fs.readFileSync("./certs/server.key", "utf8");
-var certificate = fs.readFileSync("./certs/server.crt", "utf8");
-var credentials = { key: privateKey, cert: certificate };
+let envFile = `./.env.${process.env.NODE_ENV}`;
+try {
+    if (!fs.existsSync(envFile)) {
+        console.log(`Dotenv ${envFile} not found. .env used.`);
+        envFile = "./.env";
+    }
+} catch {
+    console.error(`Unable to know if ${envFile} exists. .env used.`);
+    envFile = "./.env";
+}
+require("dotenv").config({ path: envFile });
+console.log(`Dotenv ${envFile} loaded.\n`);
 
 const app = express();
 
@@ -36,11 +45,17 @@ app.use("/api/story", require("./controllers/story"));*/
 
 const port = process.env.PORT || 3001;
 
-if (process.env.USE_LOCAL_HTTPS) {
+if (process.env.NODE_ENV === "development") {
+    console.warn("\x1b[33m%s\x1b[0m", "Local HTTPS protocol used only in development mode...");
+
+    const privateKey = fs.readFileSync("./certs/server.key", "utf8");
+    const certificate = fs.readFileSync("./certs/server.crt", "utf8");
+    const credentials = { key: privateKey, cert: certificate };
+
     const httpsServer = https.createServer(credentials, app);
     httpsServer.listen(port, () => {
-        console.log(`Server starting and listening on port ${port}`);
+        console.log("\x1b[36m%s\x1b[0m", `API server started and listening on https://localhost:${port}`);
     });
 } else {
-    app.listen(port, () => console.log(`Server starting and listening on port ${port}`));
+    app.listen(port, () => console.log("\x1b[36m%s\x1b[0m", `API server started and listening on port ${port}`));
 }

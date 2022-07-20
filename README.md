@@ -175,8 +175,8 @@ Une fois le certificat provisoire créé, j'écris les première ligne de code p
 ```javascript
 "use strict";
 
-var fs = require("fs");
-var https = require("https");
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -187,9 +187,9 @@ const rateLimit = require("express-rate-limit");
 require("dotenv").config({ path: `./.env.${process.env.NODE_ENV}` });
 
 // récupération du certificat de sécurité pour la connexion HTTPS
-var privateKey = fs.readFileSync("./certs/server.key", "utf8");
-var certificate = fs.readFileSync("./certs/server.crt", "utf8");
-var credentials = { key: privateKey, cert: certificate };
+const privateKey = fs.readFileSync("./certs/server.key", "utf8");
+const certificate = fs.readFileSync("./certs/server.crt", "utf8");
+const credentials = { key: privateKey, cert: certificate };
 
 // initialisation de l'API
 const app = express();
@@ -344,3 +344,11 @@ Compiler le projet:
 ```bash
 $ npm run build
 ```
+
+## Annexes
+
+### Comptes démos
+
+Administrateur:
+- *adresse email*: admin@credible.fr
+- *mot de passe*: Qz1GeA9dZdiecsim

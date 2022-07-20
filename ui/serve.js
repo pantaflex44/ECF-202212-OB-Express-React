@@ -4,8 +4,8 @@ const open = require("open");
 
 connect()
     .use(serveStatic("./dist"))
-    .listen(8080, () => console.log("Server running on 8080..."));
+    .listen(8080, () => console.log("UI server running on 8080..."));
 
 console.log("Launching the browser on http://localhost:8080...");
 open("http://localhost:8080");
-console.log("Use CTRL+C to stop the server.");
+console.log("Use CTRL+C to stop the ui server.");
