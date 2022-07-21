@@ -173,8 +173,6 @@ $ cd ..
 Une fois le certificat provisoire créé, j'écris les première ligne de code permettant de lancer un serveur ExpressJs faisant fonctionner l'ensemble de mon API:
 
 ```javascript
-"use strict";
-
 const fs = require("fs");
 const https = require("https");
 const express = require("express");
@@ -183,18 +181,23 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 
-// chargement du fichier d'environement
-require("dotenv").config({ path: `./.env.${process.env.NODE_ENV}` });
+if (process.env.NODE_ENV === "development") console.warn("\x1b[33m%s\x1b[0m", "API start in developement mode!\n");
 
-// récupération du certificat de sécurité pour la connexion HTTPS
-const privateKey = fs.readFileSync("./certs/server.key", "utf8");
-const certificate = fs.readFileSync("./certs/server.crt", "utf8");
-const credentials = { key: privateKey, cert: certificate };
+let envFile = `./.env.${process.env.NODE_ENV}`;
+try {
+    if (!fs.existsSync(envFile)) {
+        console.log(`Dotenv ${envFile} not found. .env used.`);
+        envFile = "./.env";
+    }
+} catch {
+    console.error(`Unable to know if ${envFile} exists. .env used.`);
+    envFile = "./.env";
+}
+require("dotenv").config({ path: envFile });
+console.log(`Dotenv ${envFile} loaded.\n`);
 
-// initialisation de l'API
 const app = express();
 
-// middleware limitant le nombre de connexions pour la même IP dans un temps donné
 app.use(
     rateLimit({
         windowMs: process.env.RATE_LIMIT_DELAY,
@@ -204,24 +207,28 @@ app.use(
     })
 );
 
-// middleware pour la gestion du partage des ressources entre origines multiples
 app.use(cors());
-
-// divers middleware utiles pour le traitement des requètes et réponses
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// création et lancement du serveur sur le port souhaité (3001 par défaut)
+// Les routes utilisées par l'API seront définies ici.
+
 const port = process.env.PORT || 3001;
 
-if (process.env.USE_LOCAL_HTTPS) {
+if (process.env.NODE_ENV === "development") {
+    console.warn("\x1b[33m%s\x1b[0m", "Local HTTPS protocol used only in development mode...");
+
+    const privateKey = fs.readFileSync("./certs/server.key", "utf8");
+    const certificate = fs.readFileSync("./certs/server.crt", "utf8");
+    const credentials = { key: privateKey, cert: certificate };
+
     const httpsServer = https.createServer(credentials, app);
     httpsServer.listen(port, () => {
-        console.log(`Server starting and listening on port ${port}`);
+        console.log("\x1b[36m%s\x1b[0m", `API server started and listening on https://localhost:${port}`);
     });
 } else {
-    app.listen(port, () => console.log(`Server starting and listening on port ${port}`));
+    app.listen(port, () => console.log("\x1b[36m%s\x1b[0m", `API server started and listening on port ${port}`));
 }
 ```
 
