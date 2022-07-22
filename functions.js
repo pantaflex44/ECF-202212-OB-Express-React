@@ -35,4 +35,21 @@ const getHashedPassword = (password) => {
     return hash;
 };
 
+const getGravatarUrl = (email, s = 256, d = "identicon", r = "g", img = false, atts = []) => {
+    let url = "https://www.gravatar.com/avatar/";
+    url += md5(email.trim().toLowerCase());
+    url += `?s=${s}&d=${d}&r=${r}`;
+
+    if (img) {
+        url = `<img src="${url}"`;
+        Object.entries(atts).forEach((entry) => {
+            const [key, value] = entry;
+            url += ` ${key}="${value}"`;
+        });
+        url += ` />`;
+    }
+
+    return url;
+};
+
 module.exports = { securePassword, getHashedPassword };
