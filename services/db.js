@@ -38,11 +38,11 @@ const query = async (sql, params = {}) => {
 const execute = async (sql, params = {}) => {
     const c = await connection();
     return new Promise(async (resolve, reject) => {
-        c.run(sql, params, (err, result) => {
+        c.run(sql, params, (err) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(result);
+                resolve();
             }
         });
     });

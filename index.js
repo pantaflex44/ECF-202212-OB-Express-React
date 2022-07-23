@@ -39,7 +39,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/api/auth", require("./controllers/auth"));
+app.use("/api/accounts", require("./controllers/accounts"));
 
 const port = process.env.PORT || 3001;
 

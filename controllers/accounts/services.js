@@ -12,11 +12,7 @@ const secureAccountData = (account) => {
 };
 
 const getAccount = async (email, fn = null, onlyExists = false) => {
-    const rows = emptyOrRows(
-        await query("SELECT * FROM accounts WHERE email = $email", {
-            $email: email
-        })
-    );
+    const rows = emptyOrRows(await query("SELECT * FROM accounts WHERE email = $email", { $email: email }));
 
     if (rows.length !== 1) return { account: null, error: { code: 404, message: "Account not found." } };
 
@@ -41,6 +37,17 @@ const getAccount = async (email, fn = null, onlyExists = false) => {
     };
 };
 
+const deleteAccount = async (email) => {
+    try {
+        await execute("DELETE FROM accounts WHERE email = $email", { $email: email });
+
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+};
+
 const generateToken = async (email, tokenType = "access_token") => {
     const { account, error } = await getAccount(email);
     if (account === null) return { token: "", expires: 0 };
@@ -61,11 +68,14 @@ const clearToken = async (email, tokenType = "access_token") => {
     const { account, error } = await getAccount(email);
     if (account === null) return false;
 
-    await execute(`UPDATE accounts SET ${tokenType} = '' WHERE email = $email`, {
-        $email: email
-    });
+    try {
+        await execute(`UPDATE accounts SET ${tokenType} = '' WHERE email = $email`, { $email: email });
 
-    return true;
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 };
 
 const refreshToken = async (jwtToken, tokenType = "access_token") => {
@@ -85,4 +95,20 @@ const refreshToken = async (jwtToken, tokenType = "access_token") => {
     });
 };
 
-module.exports = { getAccount, secureAccountData, generateToken, clearToken, refreshToken };
+const hasLeastOneAdmin = async () => {
+    const rows = emptyOrRows(await query("SELECT * FROM accounts WHERE is_admin = 1", {}));
+
+    if (rows.length < 2) return false;
+
+    return true;
+};
+
+module.exports = {
+    getAccount,
+    deleteAccount,
+    secureAccountData,
+    generateToken,
+    clearToken,
+    refreshToken,
+    hasLeastOneAdmin
+};
