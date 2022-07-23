@@ -19,4 +19,4 @@ router.post("/login", async (req, res = response) => {
     return res.json({ account: secureAccountData(account), token: data.jwtToken, expires: data.expires });
 });
 
-exports.default = router;
+module.exports = router;

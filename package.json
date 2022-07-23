@@ -5,10 +5,11 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node app",
-        "server": "nodemon",
-        "client": "npm run dev --prefix ui",
-        "dev": "cross-env NODE_ENV=development concurrently \"npm run server\" \"npm run client\"",
+        "start": "cross-env NODE_ENV=production node app",
+        "server:dev": "cross-env NODE_ENV=development nodemon",
+        "server": "cross-env NODE_ENV=production nodemon",
+        "client": "cross-env NODE_ENV=development npm run dev --prefix ui",
+        "dev": "cross-env NODE_ENV=development concurrently \"npm run server:dev\" \"npm run client\"",
         "build": "cross-env NODE_ENV=production npm run build --prefix ui"
     },
     "repository": {

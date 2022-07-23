@@ -1,4 +1,6 @@
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const ms = require("ms");
 
 const { getGravatarUrl } = require("../../functions");
 const { query, execute, emptyOrRows } = require("../../services/db");
@@ -21,13 +23,22 @@ const getAccount = async (email, fn = null, onlyExists = false) => {
     const account = rows[0];
 
     if (!onlyExists) {
-        if (account.active !== 1)
-            return { account: null, error: { code: 403, message: "Account is not yet activated." } };
+        if (!account.active) return { account: null, error: { code: 403, message: "Account is not yet activated." } };
     }
 
     if (fn && !fn(account)) return { account: null, error: { code: 401, message: "Unauthorized." } };
 
-    return { account, error: null };
+    const { active, is_admin, ...rest } = account;
+    return {
+        account: {
+            active: active === 1,
+            is_admin: is_admin === 1,
+            is_parter: is_admin === 0 && account.partner_id === 0,
+            is_structure: is_admin === 0 && account.partner_id > 0,
+            ...rest
+        },
+        error: null
+    };
 };
 
 const generateToken = async (email, tokenType = "access_token") => {

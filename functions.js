@@ -1,4 +1,9 @@
+const path = require("path");
+const fs = require("fs");
+const jsdom = require("jsdom");
+const mail = require("./services/mailer");
 const crypto = require("crypto");
+const md5 = require("blueimp-md5");
 
 const securePassword = {
     _pattern: /[a-zA-Z0-9_\-\+\.]/,
@@ -35,6 +40,28 @@ const getHashedPassword = (password) => {
     return hash;
 };
 
+function validateEmail(email) {
+    return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) ? true : false;
+}
+
+function validatePassword(password, level = 2) {
+    const mediumValidation = new RegExp(
+        "^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{8,})"
+    );
+    const strongValidation = new RegExp(
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\\!\\@\\#\\$\\%\\^\\&\\*\\)\\(\\+\\=\\.\\<\\>\\{\\}\\[\\]\\:\\;\\'\"\\|\\~\\`\\_\\-])(?=.{10,})"
+    );
+
+    let validationLevel = 0;
+    if (strongValidation.test(password.trim())) {
+        validationLevel = 2;
+    } else if (mediumValidation.test(password.trim())) {
+        validationLevel = 1;
+    }
+
+    return password.trim() === password && validationLevel === (level < 0 ? 0 : level > 2 ? 2 : level);
+}
+
 const getGravatarUrl = (email, s = 256, d = "identicon", r = "g", img = false, atts = []) => {
     let url = "https://www.gravatar.com/avatar/";
     url += md5(email.trim().toLowerCase());
@@ -52,4 +79,4 @@ const getGravatarUrl = (email, s = 256, d = "identicon", r = "g", img = false, a
     return url;
 };
 
-module.exports = { securePassword, getHashedPassword };
+module.exports = { securePassword, getHashedPassword, getGravatarUrl, validateEmail, validatePassword };
