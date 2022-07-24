@@ -2,13 +2,25 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const ms = require("ms");
 
-const { getGravatarUrl } = require("../../functions");
+const { expressMail, getGravatarUrl, sleep, expressMultipleMail } = require("../../functions");
 const { query, execute, emptyOrRows } = require("../../services/db");
 
 const secureAccountData = (account) => {
     const { password, access_token, passwordlost_token, avatar_url, ...lightAccount } = account;
 
     return { ...lightAccount, avatar_url: avatar_url ?? getGravatarUrl(account.email) };
+};
+
+const cleanAccount = (account) => {
+    const { active, is_admin, ...rest } = account;
+
+    return {
+        active: active === 1,
+        is_admin: is_admin === 1,
+        is_partner: is_admin === 0 && account.partner_id === 0,
+        is_structure: is_admin === 0 && account.partner_id > 0,
+        ...rest
+    };
 };
 
 const getAccount = async (email, fn = null, onlyExists = false) => {
@@ -24,28 +36,70 @@ const getAccount = async (email, fn = null, onlyExists = false) => {
 
     if (fn && !fn(account)) return { account: null, error: { code: 401, message: "Unauthorized." } };
 
-    const { active, is_admin, ...rest } = account;
     return {
-        account: {
-            active: active === 1,
-            is_admin: is_admin === 1,
-            is_parter: is_admin === 0 && account.partner_id === 0,
-            is_structure: is_admin === 0 && account.partner_id > 0,
-            ...rest
-        },
+        account: cleanAccount(account),
         error: null
     };
 };
 
-const deleteAccount = async (email) => {
-    try {
-        await execute("DELETE FROM accounts WHERE email = $email", { $email: email });
+const getAccounts = async (fn = null) => {
+    const rows = emptyOrRows(await query("SELECT * FROM accounts", {}));
 
-        return true;
+    if (rows.length < 1) return [];
+
+    let accounts = [...rows];
+    if (fn) accounts = fn(accounts);
+
+    accounts.map((account) => cleanAccount(account));
+
+    return accounts;
+};
+
+const deleteAccount = async (account) => {
+    const mailsToSend = [];
+    try {
+        if (account.is_partner) {
+            const structures = await getAccounts((acs) => {
+                return acs.filter((a) => a.partner_id === account.id);
+            });
+
+            await execute("DELETE FROM accounts WHERE partner_id = $partner_id", { $partner_id: account.id });
+            structures.forEach((structure) => {
+                mailsToSend.push({
+                    templateFile: "account-deleted.html",
+                    to: structure.email,
+                    vars: { display_name: structure.name }
+                });
+            });
+        }
+
+        if (account.is_structure) {
+            const partner = await getAccounts((acs) => {
+                return acs.filter((a) => a.id === account.partner_id);
+            });
+
+            if (partner.length >= 1)
+                mailsToSend.push({
+                    templateFile: "structure-account-deleted.html",
+                    to: partner[0].email,
+                    vars: { display_name: partner[0].name, structure_name: account.name }
+                });
+        }
+
+        await execute("DELETE FROM accounts WHERE email = $email", { $email: account.email });
+        mailsToSend.push({
+            templateFile: "account-deleted.html",
+            to: account.email,
+            vars: { display_name: account.name }
+        });
     } catch (error) {
         console.error(error);
         return false;
     }
+
+    if (process.env.SEND_MAILS_ON_DELETE === "true") expressMultipleMail(mailsToSend);
+
+    return true;
 };
 
 const generateToken = async (email, tokenType = "access_token") => {
@@ -105,6 +159,7 @@ const hasLeastOneAdmin = async () => {
 
 module.exports = {
     getAccount,
+    getAccounts,
     deleteAccount,
     secureAccountData,
     generateToken,

@@ -83,3 +83,51 @@ VALUES (
         "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
         1
     );
+
+INSERT INTO
+    "accounts" (
+        "is_admin",
+        "name",
+        "email",
+        "password",
+        "active"
+    )
+VALUES (
+        0,
+        "Partner1",
+        "pantaflex@hotmail.fr",
+        "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+        1
+    );
+
+INSERT INTO
+    "accounts" (
+        "is_admin",
+        "name",
+        "email",
+        "password",
+        "active"
+    )
+VALUES (
+        0,
+        "Struct1",
+        "lemoine.cml@gmail.com",
+        "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+        1
+    );
+
+INSERT INTO
+    "accounts" (
+        "is_admin",
+        "name",
+        "email",
+        "password",
+        "active"
+    )
+VALUES (
+        0,
+        "Struct2",
+        "pantaflex@tuta.io",
+        "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+        1
+    );

@@ -3,6 +3,7 @@ const htmlToText = require("nodemailer-html-to-text").htmlToText;
 
 module.exports = (to, subject, html) => {
     const transporter = nodemailer.createTransport({
+        name: process.env.SMTP_NAME,
         host: process.env.SMTP_HOST,
         port: process.env.SMTP_PORT,
         auth: {
@@ -10,7 +11,7 @@ module.exports = (to, subject, html) => {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASS
         },
-        secureConnection: process.env.SMTP_SCUR,
+        secureConnection: process.env.SMTP_SCUR === "true",
         tls: {
             rejectUnauthorized: false,
             ciphers: "SSLv3"

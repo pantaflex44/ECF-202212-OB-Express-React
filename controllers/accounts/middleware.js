@@ -2,13 +2,13 @@ const jwt = require("jsonwebtoken");
 
 const { secureAccountData, getAccount } = require("./services");
 
-const authentificate = (req, res, next) => {
+const authenticate = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
-        const token = authHeader.split(" ")[1];
+        const jwtToken = authHeader.split(" ")[1];
 
-        jwt.verify(token, process.env.JWT_SECRET, async (err, credentials) => {
+        jwt.verify(jwtToken, process.env.JWT_SECRET, async (err, credentials) => {
             if (err) {
                 if (err.name === "TokenExpiredError") return res.status(401).json({ message: "Session expired." });
 
@@ -22,6 +22,7 @@ const authentificate = (req, res, next) => {
 
             req.auth = {
                 account: secureAccountData(account),
+                token: jwtToken,
                 expires: new Date((exp || Date.now() / 1000) * 1000).toISOString()
             };
 
@@ -32,4 +33,4 @@ const authentificate = (req, res, next) => {
     }
 };
 
-module.exports = { authentificate };
+module.exports = { authenticate };

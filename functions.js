@@ -5,6 +5,66 @@ const mail = require("./services/mailer");
 const crypto = require("crypto");
 const md5 = require("blueimp-md5");
 
+const sleep = (waitTimeInMs) => new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
+
+const expressMail = async (templateFilename, to, vars = {}) => {
+    return new Promise((resolve, reject) => {
+        const templateFile = path.join(__dirname, "templates", process.env.APP_LANG, templateFilename);
+        if (!fs.existsSync(templateFile)) {
+            reject({ code: 500, message: "No mail (template file) to send." });
+        }
+
+        fs.readFile(templateFile, "utf8", (err, data) => {
+            if (err) {
+                console.error(err);
+                reject({ code: 500, message: `No mail to send. Corrupted template file.` });
+            }
+
+            let html = data || "";
+            html = html.replaceAll("{{app_name}}", process.env.APP_NAME);
+            Object.keys(vars).forEach((keyName) => {
+                html = html.replaceAll(`{{${keyName}}}`, vars[keyName]);
+            });
+
+            const parsedHtml = new jsdom.JSDOM(html);
+            const titleElement = parsedHtml.window.document.querySelector("title");
+
+            mail(to, titleElement.text, html)
+                .then((info) => {
+                    if (info.accepted.includes(to)) {
+                        resolve(info);
+                    } else {
+                        let reason = ".";
+                        if (info.rejected.includes(to)) reason = ": totally rejected by destination server.";
+                        if (info.pending.includes(to)) reason = ": temporarily rejected by destination server.";
+
+                        reject({ code: 406, message: `Unable to send email to ${to}${reason}}` });
+                    }
+                })
+                .catch((mailErr) => {
+                    console.error("mail error:", mailErr);
+                    reject({ code: 500, message: "Unable to send email." });
+                });
+        });
+    });
+};
+
+const expressMultipleMail = (mailList) => {
+    if (!Array.isArray(mailList)) return;
+
+    mailList.forEach((mail, idx) => {
+        if (typeof mail === "object" && "templateFile" in mail && "to" in mail && "vars" in mail) {
+            sleep(process.env.SMTP_SPAM_DELAY * (idx + 1)).then(async () => {
+                try {
+                    await expressMail(mail.templateFile, mail.to, mail.vars);
+                } catch (error) {
+                    console.error(mail.to, ":", error);
+                }
+            });
+        }
+    });
+};
+
 const securePassword = {
     _pattern: /[a-zA-Z0-9_\-\+\.]/,
 
@@ -79,4 +139,13 @@ const getGravatarUrl = (email, s = 256, d = "identicon", r = "g", img = false, a
     return url;
 };
 
-module.exports = { securePassword, getHashedPassword, getGravatarUrl, validateEmail, validatePassword };
+module.exports = {
+    sleep,
+    expressMail,
+    expressMultipleMail,
+    securePassword,
+    getHashedPassword,
+    getGravatarUrl,
+    validateEmail,
+    validatePassword
+};
