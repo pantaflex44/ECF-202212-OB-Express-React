@@ -55,15 +55,50 @@ const getAccounts = async (fn = null) => {
     return accounts;
 };
 
+const getPartner = async (partnerId) => {
+    return await getAccounts((acs) => {
+        return acs.filter((a) => a.id === partnerId);
+    });
+};
+
+const getPartners = async () => {
+    return await getAccounts((acs) => {
+        return acs.filter((a) => a.is_admin === 0 && a.partner_id === 0);
+    });
+};
+
+const getStructure = async (structureId) => {
+    return await getAccounts((acs) => {
+        return acs.filter((a) => a.id === structureId);
+    });
+};
+
+const getPartnerStructures = async (partnerId) => {
+    return await getAccounts((acs) => {
+        return acs.filter((a) => a.partner_id === partnerId);
+    });
+};
+
+const getAdministrator = async (adminId) => {
+    return await getAccounts((acs) => {
+        return acs.filter((a) => a.id === adminId);
+    });
+};
+
+const getAdministrators = async () => {
+    return await getAccounts((acs) => {
+        return acs.filter((a) => a.is_admin === 1);
+    });
+};
+
 const deleteAccount = async (account) => {
     const mailsToSend = [];
     try {
         if (account.is_partner) {
-            const structures = await getAccounts((acs) => {
-                return acs.filter((a) => a.partner_id === account.id);
-            });
+            const structures = await getPartnerStructures(account.id);
 
             await execute("DELETE FROM accounts WHERE partner_id = $partner_id", { $partner_id: account.id });
+
             structures.forEach((structure) => {
                 mailsToSend.push({
                     templateFile: "account-deleted.html",
@@ -74,9 +109,7 @@ const deleteAccount = async (account) => {
         }
 
         if (account.is_structure) {
-            const partner = await getAccounts((acs) => {
-                return acs.filter((a) => a.id === account.partner_id);
-            });
+            const partner = await getPartner(account.partner_id);
 
             if (partner.length >= 1)
                 mailsToSend.push({
@@ -87,6 +120,7 @@ const deleteAccount = async (account) => {
         }
 
         await execute("DELETE FROM accounts WHERE email = $email", { $email: account.email });
+
         mailsToSend.push({
             templateFile: "account-deleted.html",
             to: account.email,
@@ -160,6 +194,12 @@ const hasLeastOneAdmin = async () => {
 module.exports = {
     getAccount,
     getAccounts,
+    getPartner,
+    getPartners,
+    getStructure,
+    getPartnerStructures,
+    getAdministrator,
+    getAdministrators,
     deleteAccount,
     secureAccountData,
     generateToken,
