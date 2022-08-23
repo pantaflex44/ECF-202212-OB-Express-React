@@ -316,9 +316,25 @@ footer {
     opacity: 0.2;
 }
 
-.formBox {
-    margin-top: 10vmin;
+form {
+    width: 100%;
+    min-width: 200px;
+    max-width: 400px;
     margin-inline: auto;
+
+    &.multiCol {
+        max-width: 100%;
+    }
+
+    &.lg {
+        max-width: 600px;
+    }
+}
+
+.formBox {
+    margin-top: 5vmin;
+    margin-inline: auto;
+    width: 100%;
 
     display: flex;
     flex-direction: column;
@@ -693,6 +709,23 @@ textarea {
 
                 color: $dark-200;
             }
+        }
+    }
+
+    .inputValidator {
+        position: absolute;
+        margin-top: 1em;
+
+        bottom: -1.5em;
+
+        color: $primaryColor;
+        font-size: small;
+
+        &.valid {
+            color: $greenAlertPrimary;
+        }
+        &.invalid {
+            color: $redAlertPrimary;
         }
     }
 }

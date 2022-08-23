@@ -244,6 +244,25 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
         );
     }
 
+    function newPassword(token, email, password, onSuccess = null, onError = null) {
+        httpClient(
+            "post",
+            "accounts/newpassword",
+            { token, email, password },
+            async (response) => {
+                const data = await httpResponse(response);
+                if (data !== null) {
+                    if (onSuccess) onSuccess(data);
+                } else {
+                    onError({ code: 500, message: "Une erreur interne est survenue." });
+                }
+            },
+            (err) => {
+                if (onError) onError(err);
+            }
+        );
+    }
+
     async function emailExists(email) {
         try {
             const result = await httpClientAsync("post", "accounts/emailexists", { email });
@@ -278,7 +297,8 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
                 getSavedCredentials,
                 emailExists,
                 nameExists,
-                passwordLost
+                passwordLost,
+                newPassword
             }}
         >
             {children}

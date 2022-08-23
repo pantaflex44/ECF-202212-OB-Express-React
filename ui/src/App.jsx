@@ -11,6 +11,7 @@ import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import PasswordLost from "./pages/PasswordLost";
+import NewPassword from "./pages/NewPassword";
 import Error404 from "./pages/Error404";
 
 function RoutesManager() {
@@ -22,7 +23,12 @@ function RoutesManager() {
             <Route
                 exact
                 path="/passwordlost"
-                element={api.currentUser.connected ? <Navigate to={"/"} replace={false} /> : <PasswordLost />}
+                element={api.currentUser.connected ? <Navigate to={"/"} replace={true} /> : <PasswordLost />}
+            />
+            <Route
+                exact
+                path="/newpassword"
+                element={api.currentUser.connected ? <Navigate to={"/"} replace={true} /> : <NewPassword />}
             />
             <Route path="*" element={<Error404 />} />
         </Routes>

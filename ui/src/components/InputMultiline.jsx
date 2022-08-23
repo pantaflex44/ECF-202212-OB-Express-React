@@ -1,13 +1,7 @@
 import React, { useState, createRef, useEffect } from "react";
 import { BsBackspace } from "react-icons/bs";
 
-export default function InputDescription({
-    onChange = null,
-    onClearText = null,
-    readOnly = false,
-    rows = 4,
-    ...props
-}) {
+export default function InputMultiline({ onChange = null, onClearText = null, readOnly = false, rows = 6, ...props }) {
     const [value, setValue] = useState(props.value || "");
 
     const textRef = createRef();

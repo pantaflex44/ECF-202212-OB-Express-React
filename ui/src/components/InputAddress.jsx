@@ -1,7 +1,7 @@
 import React, { useState, createRef, useEffect } from "react";
 import { BsBackspace } from "react-icons/bs";
 
-export default function InputAddress({ onChange = null, onClearText = null, readOnly = false, ...props }) {
+export default function InputAddress({ onChange = null, onClearText = null, readOnly = false, rows = 4, ...props }) {
     const [value, setValue] = useState(props.value || "");
 
     const textRef = createRef();
@@ -28,7 +28,7 @@ export default function InputAddress({ onChange = null, onClearText = null, read
 
     return (
         <div className="inputBox">
-            <textarea onChange={handleChange} {...props} ref={textRef} readOnly={readOnly} rows={4} value={value} />
+            <textarea onChange={handleChange} {...props} ref={textRef} readOnly={readOnly} rows={rows} value={value} />
             {!readOnly && onClearText && value !== "" && (
                 <div className="textClear" onClick={handleClear} title={"Effacer"}>
                     <BsBackspace />

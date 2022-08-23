@@ -94,7 +94,7 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className="multiCol">
                     <div className="formCol">
                         <div className="formRow noPadding">
                             <label htmlFor="email">

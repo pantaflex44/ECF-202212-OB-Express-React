@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, createRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import BeatLoader from "react-spinners/BeatLoader";
 
@@ -7,15 +7,19 @@ import env from "../../env.json";
 
 import { ApiContext } from "../components/ApiProvider";
 import InputEmail from "../components/InputEmail";
+import InputMultiline from "../components/InputMultiline";
+import InputPassword from "../components/InputPassword";
+import { BsHouse, BsCheck2Square } from "react-icons/bs";
 
-import { BsHouse, BsMailbox2 } from "react-icons/bs";
-
-export default function PasswordLost() {
+export default function NewPassword() {
     const api = useContext(ApiContext);
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [formData, setFormData] = useState({
-        email: { value: "", isValid: false }
+        email: { value: "", isValid: false },
+        password: { value: "", isValid: false },
+        token: { value: "", isValid: false }
     });
     const [sending, setSending] = useState(false);
     const [sended, setSended] = useState(false);
@@ -24,12 +28,14 @@ export default function PasswordLost() {
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (!formData.email.isValid) return;
+        if (!formData.email.isValid || !formData.password.isValid || !formData.token.isValid) return;
 
         setSending(true);
 
-        api.passwordLost(
+        api.newPassword(
+            formData.token.value,
             formData.email.value,
+            formData.password.value,
             (data) => {
                 setSending(false);
                 setSended(true);
@@ -49,10 +55,19 @@ export default function PasswordLost() {
         api.resetHttpError();
     }
 
+    useEffect(() => {
+        const token = searchParams.get("token");
+        if (token) {
+            setFormData((oldFormData) => {
+                return { ...oldFormData, token: { value: token, isValid: true } };
+            });
+        }
+    }, []);
+
     return (
         <>
             <Helmet>
-                <title>{env.APP_NAME} - Retrouver mon mot de passe</title>
+                <title>{env.APP_NAME} - Redéfinir le mot de passe</title>
             </Helmet>
             <div className="page">
                 <h2 className="breadcrumb">
@@ -66,33 +81,35 @@ export default function PasswordLost() {
                         <BsHouse />
                     </div>
                     <span className="chevron">»</span>
-                    <span>Retrouver mon mot de passe</span>
+                    <span>Redéfinir le mot de passe</span>
                 </h2>
 
                 {sended ? (
                     <>
                         <div className="row">
-                            <BsMailbox2 size={160} className="light" />
+                            <BsCheck2Square size={160} className="light" />
                             <p style={{ maxWidth: "50%" }}>
-                                Un email vient d'être envoyé dans votre boite. Suivez les indications pour définir un
-                                nouveau mot de passe.
+                                La modification du mot de passe a bien été prise en compte.
                                 <br />
-                                <br />A bientôt.
+                                <br />
+                                <NavLink to="/" replace={true}>
+                                    Retourner à l'accueil
+                                </NavLink>{" "}
+                                pour se connecter.
                             </p>
                         </div>
                     </>
                 ) : (
                     <>
                         <p>
-                            Vous avez perdu votre mot de passe? Pas de panique, nous vous proposons de redéfinir un
-                            nouveau mot de passe en toute sécurité. Il vous faudra remplir ce formulaire et suivre les
-                            instructions dans le mail qui vous sera envoyé.
+                            Bienvenue dans la procédure de création d'un nouveau mot de passe. Suivez les étapes
+                            ci-dessous en remplissant le formulaire comme indiqué, puis <em>Validez</em> votre demande.
                         </p>
                         <div className="row">
                             <div className="formBox">
                                 <form onSubmit={handleSubmit} className="lg">
                                     <div className="formRow noPadding">
-                                        <label htmlFor="email">Email</label>
+                                        <label htmlFor="email">Adresse email du compte</label>
                                         <InputEmail
                                             name="email"
                                             id="email"
@@ -105,11 +122,37 @@ export default function PasswordLost() {
                                             onValid={(isValid) => {
                                                 handleChange("email", { isValid });
                                             }}
-                                            checkExists={false}
-                                            checkReverse={false}
+                                            checkExists={true}
+                                            checkReverse={true}
                                             disabled={sending || sended}
                                         />
                                     </div>
+
+                                    <div className="formRow noPadding">
+                                        <label htmlFor="email">Nouveau mot de passe</label>
+                                        <InputPassword
+                                            name="password"
+                                            id="password"
+                                            placeholder="choisissez un nouveau mot de passe"
+                                            autoComplete="off"
+                                            minLength={8}
+                                            testDigit={true}
+                                            testLowerCase={true}
+                                            testSpecialChar={true}
+                                            testUpperCase={true}
+                                            testMinLength={true}
+                                            reType={true}
+                                            validate={true}
+                                            value={formData.password.value}
+                                            onChange={(value) => {
+                                                handleChange("password", { value });
+                                            }}
+                                            onValid={(isValid) => {
+                                                handleChange("password", { isValid });
+                                            }}
+                                        />
+                                    </div>
+
                                     <div className="formRow noPadding">
                                         {sending ? (
                                             <div className="spinner">
@@ -118,12 +161,14 @@ export default function PasswordLost() {
                                         ) : (
                                             <input
                                                 type="submit"
-                                                value={"envoyer"}
-                                                title={"réinitialiser mon mot de passe"}
+                                                value={"valider"}
+                                                title={"valider ma demande"}
                                                 disabled={
                                                     api.httpError ||
                                                     !formData.email.isValid ||
                                                     formData.email.value === "" ||
+                                                    !formData.password.isValid ||
+                                                    !formData.token.isValid ||
                                                     sending ||
                                                     sended
                                                 }

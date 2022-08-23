@@ -66,7 +66,7 @@ export default function Index() {
                     </div>
                     <div className="colRight grow">
                         <div className="formBox noMargin">
-                            <form onSubmit={handleLogin}>
+                            <form onSubmit={handleLogin} className="lg">
                                 <div className="formRow">
                                     <label htmlFor="email">Email</label>
                                     <InputEmail

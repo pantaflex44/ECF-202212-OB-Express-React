@@ -11,14 +11,19 @@ export default function InputPassword({
     testDigit = true,
     testSpecialChar = true,
     testMinLength = true,
+    reType = false,
+    reTypeErrorMessage = "mot de passe erroné",
     onChange = null,
     onValid = null,
     ...props
 }) {
     const inputType = "password";
     const [value, setValue] = useState(props.value || "");
+    const [reTypedValue, setReTypedValue] = useState("");
+    const [reTypedValidated, setReTypedValidated] = useState(false);
     const [hidden, setHidden] = useState(true);
     const inputRef = createRef();
+    const reTypeRef = createRef();
 
     const toggleVisibility = (e) => {
         const state = !hidden;
@@ -27,9 +32,11 @@ export default function InputPassword({
         if (state) {
             inputRef.current.classList.remove("revealed");
             inputRef.current.setAttribute("type", "password");
+            if (reType) reTypeRef.current.setAttribute("type", "password");
         } else {
             inputRef.current.classList.add("revealed");
             inputRef.current.setAttribute("type", "text");
+            if (reType) reTypeRef.current.setAttribute("type", "text");
         }
     };
 
@@ -56,8 +63,9 @@ export default function InputPassword({
     };
 
     useEffect(() => {
-        if (onValid) onValid(validate ? isValid(value) : value.length > 0, value);
-    }, [value]);
+        if (onValid)
+            onValid((validate ? isValid(value) : value.length > 0) && (!reType || (reType && reTypedValidated)), value);
+    }, [value, reTypedValue, reType, reTypedValidated]);
 
     useEffect(() => {
         setValue(props.value || "");
@@ -68,12 +76,34 @@ export default function InputPassword({
 
         const data = (e.target.value || "").trim();
         setValue(data);
+
+        setReTypedValidated(data === reTypedValue);
+        if (data === reTypedValue && data === "") setReTypedValidated(false);
+
         if (onChange) onChange(data);
+    }
+
+    function handleReTypeChange(e) {
+        e.preventDefault();
+
+        const data = (e.target.value || "").trim();
+        setReTypedValue(data);
+
+        setReTypedValidated(data === value);
+        if (data === value && value === "") setReTypedValidated(false);
     }
 
     return (
         <div className="passwordBox">
-            <input type={inputType} value={value} onChange={handleChange} {...props} ref={inputRef} />
+            <input
+                type={inputType}
+                value={value}
+                onChange={handleChange}
+                {...props}
+                ref={inputRef}
+                style={reType ? { marginBottom: "1em" } : null}
+            />
+
             <div
                 className="passwordRevelator"
                 onClick={toggleVisibility}
@@ -81,6 +111,18 @@ export default function InputPassword({
             >
                 {hidden ? <BsEyeSlash /> : <BsEye />}
             </div>
+
+            {reType && (
+                <input
+                    type={inputType}
+                    value={reTypedValue}
+                    onChange={handleReTypeChange}
+                    name={`${props.name}_retype`}
+                    ref={reTypeRef}
+                    placeholder="retapez le mot de passe"
+                />
+            )}
+
             {validate && (
                 <ul className="passwordRules">
                     {testLowerCase && (
@@ -121,6 +163,14 @@ export default function InputPassword({
                                 {hasMinLength(value) ? <BsCheckCircle color={"darkslategray"} /> : <BsCircle />}
                             </div>
                             <span>minimum {minLength} caractères</span>
+                        </li>
+                    )}
+                    {reType && (
+                        <li>
+                            <div className="bullet">
+                                {reTypedValidated ? <BsCheckCircle color={"darkslategray"} /> : <BsCircle />}
+                            </div>
+                            <span>mots de passe identiques</span>
                         </li>
                     )}
                 </ul>
