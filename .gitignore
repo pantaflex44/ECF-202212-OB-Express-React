@@ -1,0 +1,11 @@
+node_modules
+.env.development
+.env.production
+certs/server.crt
+certs/server.key
+data/app.db
+PRIVATE.md
+certs/ionos_vps_pf44-dev_server.crt
+certs/ionos_vps_pf44-dev_server.key
+certs/_ionos_vps_pf44-dev_server.crt
+certs/_ionos_vps_pf44-dev_server.key
