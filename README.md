@@ -141,9 +141,9 @@ Une fois celui-ci configuré, j'**initialise Git** en utilisant les commandes ci
 $ git init
 $ git add .
 $ git commit -m "first commit"
-$ git branch -M main
+$ git branch -M dev
 $ git remote add origin https://github.com/pantaflex44/ECF-202212-OB-Express-React.git
-$ git push -u origin main
+$ git push -u origin dev
 ```
 
 ### NPM
@@ -452,27 +452,27 @@ L'interface d'administration est accessible via ces identifiants. De cette inter
 
 - **Connexion d'un utilisateur**
 
-![Connexion](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/login.png)
+![Connexion](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/login.png)
 
 - **Création d'un nouveau compte**
 
-![Nouveau compte](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/create-account.png)
+![Nouveau compte](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/create-account.png)
 
 - **Diagramme de classes**
 
-![Diagramme de classes](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/class-diagram.png)
+![Diagramme de classes](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/class-diagram.png)
 
-![Tables](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/class-diagram-tables.png)
+![Tables](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/class-diagram-tables.png)
 
 - **Diagrammes de séquences** 
 
-![Administrateurs](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/sequence-diagram-administrateur.png)
+![Administrateurs](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/sequence-diagram-administrateur.png)
 
-![Partenaires et Structures](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/sequence-diagram-partenaire-ou-structure.png)
+![Partenaires et Structures](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/sequence-diagram-partenaire-ou-structure.png)
 
 - **Cas d'utilisations** 
 
-![Cas d'utilisations](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/main/ecf-files/diagrams/use-case.png)
+![Cas d'utilisations](https://github.com/pantaflex44/ECF-202212-OB-Express-React/raw/dev/ecf-files/diagrams/use-case.png)
 
 ### Wireframes et Charte graphique
 
