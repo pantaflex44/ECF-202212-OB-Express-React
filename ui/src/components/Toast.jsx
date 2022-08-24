@@ -7,7 +7,6 @@ export default function Toast({ name, message, icon = null, closable = true }) {
 
     useEffect(() => {
         const savedState = localStorage.getItem(`${process.env.APP_NAME}_${name}_toast`);
-        console.log(savedState);
         setShow(savedState !== "off" ? true : false);
     }, []);
 

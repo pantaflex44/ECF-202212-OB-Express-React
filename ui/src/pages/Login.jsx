@@ -10,7 +10,7 @@ import InputPassword from "../components/InputPassword";
 import Switch from "../components/Switch";
 import BeatLoader from "react-spinners/BeatLoader";
 
-import { BsFillLockFill } from "react-icons/bs";
+import { AiOutlineApi } from "react-icons/ai";
 
 export default function Index() {
     const api = useContext(ApiContext);
@@ -62,7 +62,7 @@ export default function Index() {
 
                 <div className="row">
                     <div className="colLeft shrink mobileHide">
-                        <BsFillLockFill size={192} />
+                        <AiOutlineApi size={192} />
                     </div>
                     <div className="colRight grow">
                         <div className="formBox noMargin">

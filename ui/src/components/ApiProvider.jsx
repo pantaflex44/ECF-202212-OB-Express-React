@@ -289,6 +289,7 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
         <ApiContext.Provider
             value={{
                 httpError,
+                setHttpError,
                 resetHttpError,
                 currentUser,
                 login,

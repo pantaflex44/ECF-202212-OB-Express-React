@@ -330,7 +330,7 @@ const generateToken = async (email, tokenType = "access_token") => {
     const { account, error } = await getAccount(email);
     if (account === null) return { jwtToken: "", token: "", expires: 0 };
 
-    const token = crypto.randomBytes(64).toString("hex");
+    const token = crypto.randomBytes(parseInt(process.env.TOKENS_LENGTH)).toString("hex");
 
     await execute(`UPDATE accounts SET ${tokenType} = $token WHERE email = $email`, {
         $email: email,
@@ -491,7 +491,7 @@ const createAccount = async (
 
     try {
         const tempPassword = securePassword.generate(16);
-        const token = crypto.randomBytes(64).toString("hex");
+        const token = crypto.randomBytes(process.env.TOKENS_LENGTH).toString("hex");
 
         const emailAddress = email.trim();
 
@@ -637,7 +637,7 @@ const updateAccount = async (currentAuthAccount, account, body) => {
                 const { email, ...rest } = params;
                 params = { ...rest };
             } else {
-                const token = crypto.randomBytes(64).toString("hex");
+                const token = crypto.randomBytes(process.env.TOKENS_LENGTH).toString("hex");
 
                 params = { ...params, access_token: "", passwordlost_token: "", activation_token: token, active: 0 };
 

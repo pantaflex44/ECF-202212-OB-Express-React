@@ -31,8 +31,8 @@ $redAlertSecondary: salmon;
 $greenAlertPrimary: cadetblue;
 $greenAlertSecondary: darkcyan;
 
-$primaryColor: darkslategray;
-$secondaryColor: slategray;
+$primaryColor: #2c4b47;
+$secondaryColor: #4c6c68;
 
 *,
 *::before,
@@ -63,8 +63,8 @@ body {
     background-color: $white;
 
     #app {
-        display: grid;
-        grid-template-rows: auto 1fr auto;
+        /*display: grid;
+        grid-template-rows: auto 1fr auto;*/
 
         width: 100%;
         max-width: 1024px;
@@ -206,7 +206,7 @@ footer {
         margin-inline: auto;
 
         color: $primaryColor;
-        opacity: 0.2;
+        opacity: 0.1;
     }
 
     .colRight {
@@ -322,6 +322,9 @@ form {
     max-width: 400px;
     margin-inline: auto;
 
+    background-color: $lightGray-900;
+    border-radius: 8px;
+
     &.multiCol {
         max-width: 100%;
     }
@@ -349,9 +352,10 @@ form {
 
     .formRow {
         width: 100%;
-        max-width: 400px;
+        max-width: 100%;
 
-        padding: 1em;
+        padding-block: 1em;
+        padding-inline: 2em;
         margin-block: 1em;
 
         display: flex;
@@ -384,7 +388,9 @@ form {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        gap: 1em;
+        gap: 2em;
+
+        padding-inline: 2em;
 
         &.reverse {
             flex-wrap: wrap-reverse;
@@ -396,12 +402,24 @@ form {
 
             @media only screen and (min-width: 800px) {
                 width: calc(50% - 1em);
-                gap: 0.5em;
+                gap: 0em;
             }
         }
 
         @media only screen and (max-width: 799px) {
             gap: 0;
+        }
+
+        .colSeparator {
+            height: 100%;
+            width: 1;
+            margin-inline: 0.5em;
+
+            background-color: $lightGray-800;
+        }
+
+        .formRow {
+            padding-inline: 0;
         }
     }
 
@@ -420,9 +438,8 @@ form {
     .avatar {
         position: absolute;
 
-        top: 0em;
-        left: 50%;
-        transform: translateX(-50%);
+        top: 9.5em;
+        left: 5em;
 
         width: 55vw;
         max-width: 280px;
@@ -431,7 +448,9 @@ form {
         opacity: 0.1;
 
         @media screen and (max-width: 800px) {
-            top: 6em;
+            top: 8em;
+            left: 50%;
+            transform: translateX(-50%);
         }
     }
 }
@@ -1009,6 +1028,7 @@ textarea {
     padding-block: 1em;
     margin-top: 2em;
     margin-bottom: 3em;
+    margin-inline: 1em;
 
     border-top: 1px solid $lightGray-800;
     border-bottom: 1px solid $lightGray-800;
@@ -1049,18 +1069,63 @@ textarea {
 .tabItem {
     position: relative;
 
-    margin-top: 4em;
+    margin-top: 3em;
     margin-bottom: 4em;
 
-    .tabItemTitle {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: baseline;
-        justify-content: space-between;
+    .tabItemPanel {
+        .tabItemTitle {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: baseline;
+            justify-content: space-between;
 
-        h3 {
+            margin-top: 0em;
+            margin-bottom: 0em;
+
+            .tabItemTitleDetails {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 0.5em;
+
+                cursor: pointer;
+                line-height: 1;
+
+                .tabItemTitleChevron {
+                    color: $secondaryColor;
+                }
+
+                h3 {
+                    margin-bottom: 1.1em;
+
+                    .closedTitle {
+                        margin-left: 1em;
+
+                        font-weight: 100;
+                        font-size: smaller;
+                    }
+                }
+            }
+        }
+
+        .tabItemContent {
+            transform-origin: top;
+
             margin-bottom: 2em;
+
+            &.opened {
+                transform: scaleY(1);
+                height: auto;
+            }
+
+            &.closed {
+                transform: scaleY(0);
+                height: 0;
+                margin-bottom: 0;
+            }
         }
     }
 }

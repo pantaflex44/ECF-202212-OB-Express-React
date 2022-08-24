@@ -80,10 +80,10 @@ export default function ProfileForm({ account, editMode = false, onChange = null
 
     return (
         <div className="profileForm">
-            <img className="avatar" src={formData.avatar_url} title={formData.name} />
+            {/* <img className="avatar" src={formData.avatar_url} title={formData.name} /> */}
             <div className="formBox noMargin">
                 {editMode && (
-                    <div className="formRow noPadding">
+                    <div className="formRow">
                         <p>
                             <small>
                                 <em>
@@ -96,7 +96,7 @@ export default function ProfileForm({ account, editMode = false, onChange = null
 
                 <form onSubmit={handleSubmit} className="multiCol">
                     <div className="formCol">
-                        <div className="formRow noPadding">
+                        <div className="formRow">
                             <label htmlFor="email">
                                 Adresse email du compte <b>*</b>
                             </label>
@@ -120,7 +120,7 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                             />
                         </div>
 
-                        <div className="formRow noPadding">
+                        <div className="formRow">
                             <label>Mot de passe</label>
                             {editMode && (
                                 <>
@@ -166,7 +166,7 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                     </div>
 
                     <div className="formCol">
-                        <div className="formRow noPadding">
+                        <div className="formRow">
                             <label htmlFor="name">
                                 Votre nom <b>*</b>
                             </label>
@@ -191,27 +191,27 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                                 checkExists={true}
                             />
                         </div>
-                        <div className="formRow noPadding">
+                        <div className="formRow">
                             <label htmlFor="active" style={{ marginBottom: "6px" }}>
                                 Etat du compte
                             </label>
-                            {api.currentUser.account.email === account.email && (
+
+                            <Switch
+                                label={`Compte ${formData.active ? "activé" : "désactivé"}`}
+                                title="Etat du compte"
+                                name="active"
+                                checked={formData.active}
+                                onChange={(state) => {
+                                    handleChange("active", state);
+                                }}
+                                readOnly={!editMode || api.currentUser.account.email === account.email}
+                            />
+
+                            {api.currentUser.account.email === account.email && editMode ? (
                                 <p>
                                     <small>Vous ne pouvez pas activer ou désactiver votre propre compte.</small>
                                 </p>
-                            )}
-                            {api.currentUser.account.email !== account.email && (
-                                <Switch
-                                    label={`Compte ${formData.active ? "activé" : "désactivé"}`}
-                                    title="Etat du compte"
-                                    name="active"
-                                    checked={formData.active}
-                                    onChange={(state) => {
-                                        handleChange("active", state);
-                                    }}
-                                    readOnly={!editMode || api.currentUser.account.email === account.email}
-                                />
-                            )}
+                            ) : null}
                         </div>
                     </div>
 
@@ -233,11 +233,11 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                         }
                     />
 
-                    <div className="formRow noPadding">
+                    <div className="formRow">
                         <h4>Informations complémentaires</h4>
                     </div>
 
-                    <div className="formRow noPadding">
+                    <div className="formRow">
                         <label htmlFor="description">Description</label>
                         <InputDescription
                             name="description"
@@ -255,7 +255,7 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                     </div>
 
                     <div className="formCol">
-                        <div className="formRow noPadding">
+                        <div className="formRow">
                             <label htmlFor="postal_address">Adresse postale</label>
                             <InputAddress
                                 name="postal_address"
@@ -271,7 +271,7 @@ export default function ProfileForm({ account, editMode = false, onChange = null
                                 readOnly={!editMode}
                             />
                         </div>
-                        <div className="formRow noPadding">
+                        <div className="formRow">
                             <label htmlFor="gsm">Téléphone</label>
                             <InputPhone
                                 name="gsm"

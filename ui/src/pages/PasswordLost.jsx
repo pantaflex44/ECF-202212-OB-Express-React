@@ -8,7 +8,7 @@ import env from "../../env.json";
 import { ApiContext } from "../components/ApiProvider";
 import InputEmail from "../components/InputEmail";
 
-import { BsHouse, BsMailbox2 } from "react-icons/bs";
+import { AiOutlineHome, AiOutlineMail, AiOutlineSearch } from "react-icons/ai";
 
 export default function PasswordLost() {
     const api = useContext(ApiContext);
@@ -63,7 +63,7 @@ export default function PasswordLost() {
                         }}
                         title="retourner à l'accueil"
                     >
-                        <BsHouse />
+                        <AiOutlineHome />
                     </div>
                     <span className="chevron">»</span>
                     <span>Retrouver mon mot de passe</span>
@@ -72,7 +72,7 @@ export default function PasswordLost() {
                 {sended ? (
                     <>
                         <div className="row">
-                            <BsMailbox2 size={160} className="light" />
+                            <AiOutlineMail size={160} className="light" />
                             <p style={{ maxWidth: "50%" }}>
                                 Un email vient d'être envoyé dans votre boite. Suivez les indications pour définir un
                                 nouveau mot de passe.
@@ -89,49 +89,53 @@ export default function PasswordLost() {
                             instructions dans le mail qui vous sera envoyé.
                         </p>
                         <div className="row">
-                            <div className="formBox">
-                                <form onSubmit={handleSubmit} className="lg">
-                                    <div className="formRow noPadding">
-                                        <label htmlFor="email">Email</label>
-                                        <InputEmail
-                                            name="email"
-                                            id="email"
-                                            placeholder="adresse email de connexion"
-                                            autoComplete="off"
-                                            value={formData.email.value}
-                                            onChange={(value) => {
-                                                handleChange("email", { value });
-                                            }}
-                                            onValid={(isValid) => {
-                                                handleChange("email", { isValid });
-                                            }}
-                                            checkExists={false}
-                                            checkReverse={false}
-                                            disabled={sending || sended}
-                                        />
-                                    </div>
-                                    <div className="formRow noPadding">
-                                        {sending ? (
-                                            <div className="spinner">
-                                                <BeatLoader size={16} />
-                                            </div>
-                                        ) : (
-                                            <input
-                                                type="submit"
-                                                value={"envoyer"}
-                                                title={"réinitialiser mon mot de passe"}
-                                                disabled={
-                                                    api.httpError ||
-                                                    !formData.email.isValid ||
-                                                    formData.email.value === "" ||
-                                                    sending ||
-                                                    sended
-                                                }
-                                                ref={submitRef}
+                            <div className="colLeft shrink mobileHide">
+                                <AiOutlineSearch size={192} />
+                            </div>
+                            <div className="colRight grow">
+                                <div className="formBox noMargin">
+                                    <form onSubmit={handleSubmit} className="lg">
+                                        <div className="formRow">
+                                            <label htmlFor="email">Email</label>
+                                            <InputEmail
+                                                name="email"
+                                                id="email"
+                                                placeholder="adresse email de connexion"
+                                                value={formData.email.value}
+                                                onChange={(value) => {
+                                                    handleChange("email", { value });
+                                                }}
+                                                onValid={(isValid) => {
+                                                    handleChange("email", { isValid });
+                                                }}
+                                                checkExists={false}
+                                                checkReverse={false}
+                                                disabled={sending || sended}
                                             />
-                                        )}
-                                    </div>
-                                </form>
+                                        </div>
+                                        <div className="formRow">
+                                            {sending ? (
+                                                <div className="spinner">
+                                                    <BeatLoader size={16} />
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="submit"
+                                                    value={"envoyer"}
+                                                    title={"réinitialiser mon mot de passe"}
+                                                    disabled={
+                                                        api.httpError ||
+                                                        !formData.email.isValid ||
+                                                        formData.email.value === "" ||
+                                                        sending ||
+                                                        sended
+                                                    }
+                                                    ref={submitRef}
+                                                />
+                                            )}
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </>

@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { BsPen, BsSave } from "react-icons/bs";
 
 import { ApiContext } from "./ApiProvider";
+import TabItems from "./TabItems";
+import TabItemPanel from "./TabItemPanel";
 import ProfileForm from "./ProfileForm";
 
 export default function ProfileTabItem() {
@@ -29,23 +31,29 @@ export default function ProfileTabItem() {
     }
 
     return (
-        <div className="tabItem">
-            <div className="tabItemTitle">
-                <h3>Mon profil et mes droits</h3>
+        <TabItems>
+            <TabItemPanel
+                title="Fiche profil"
+                titleIcon={
+                    api.currentUser.account.is_admin && (
+                        <button
+                            onClick={handleEditModeClick}
+                            title={editMode ? "Enregistrer" : "Editer"}
+                            className={`${editMode ? "important" : ""}`.trim()}
+                        >
+                            {!editMode && <BsPen size={"1.5em"} />}
+                            {editMode && <BsSave size={"1.5em"} />}
+                        </button>
+                    )
+                }
+                closedTitle={editedAccount && editedAccount.name}
+            >
+                <ProfileForm account={editedAccount} editMode={editMode} onChange={handleChange} onSave={handleSave} />
+            </TabItemPanel>
 
-                {api.currentUser.account.is_admin && (
-                    <button
-                        onClick={handleEditModeClick}
-                        title={editMode ? "Enregistrer" : "Editer"}
-                        className={`${editMode ? "important" : ""}`.trim()}
-                    >
-                        {!editMode && <BsPen size={"1.5em"} />}
-                        {editMode && <BsSave size={"1.5em"} />}
-                    </button>
-                )}
-            </div>
-
-            <ProfileForm account={editedAccount} editMode={editMode} onChange={handleChange} onSave={handleSave} />
-        </div>
+            <TabItemPanel title="Droits et permissions" initialOpepend={true}>
+                Mes droits
+            </TabItemPanel>
+        </TabItems>
     );
 }

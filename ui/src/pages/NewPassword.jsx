@@ -4,12 +4,13 @@ import { Helmet } from "react-helmet-async";
 import BeatLoader from "react-spinners/BeatLoader";
 
 import env from "../../env.json";
+import { isValidToken } from "../js/functions";
 
 import { ApiContext } from "../components/ApiProvider";
 import InputEmail from "../components/InputEmail";
-import InputMultiline from "../components/InputMultiline";
 import InputPassword from "../components/InputPassword";
-import { BsHouse, BsCheck2Square } from "react-icons/bs";
+
+import { AiOutlineHome, AiOutlineCheck, AiOutlineLock } from "react-icons/ai";
 
 export default function NewPassword() {
     const api = useContext(ApiContext);
@@ -57,10 +58,12 @@ export default function NewPassword() {
 
     useEffect(() => {
         const token = searchParams.get("token");
-        if (token) {
+        if (isValidToken(token)) {
             setFormData((oldFormData) => {
                 return { ...oldFormData, token: { value: token, isValid: true } };
             });
+        } else {
+            api.setHttpError({ code: 500, message: "Jeton de sécurité corrompu ou incorrect!" });
         }
     }, []);
 
@@ -78,7 +81,7 @@ export default function NewPassword() {
                         }}
                         title="retourner à l'accueil"
                     >
-                        <BsHouse />
+                        <AiOutlineHome />
                     </div>
                     <span className="chevron">»</span>
                     <span>Redéfinir le mot de passe</span>
@@ -87,7 +90,7 @@ export default function NewPassword() {
                 {sended ? (
                     <>
                         <div className="row">
-                            <BsCheck2Square size={160} className="light" />
+                            <AiOutlineCheck size={160} className="light" />
                             <p style={{ maxWidth: "50%" }}>
                                 La modification du mot de passe a bien été prise en compte.
                                 <br />
@@ -106,77 +109,82 @@ export default function NewPassword() {
                             ci-dessous en remplissant le formulaire comme indiqué, puis <em>Validez</em> votre demande.
                         </p>
                         <div className="row">
-                            <div className="formBox">
-                                <form onSubmit={handleSubmit} className="lg">
-                                    <div className="formRow noPadding">
-                                        <label htmlFor="email">Adresse email du compte</label>
-                                        <InputEmail
-                                            name="email"
-                                            id="email"
-                                            placeholder="adresse email de connexion"
-                                            autoComplete="off"
-                                            value={formData.email.value}
-                                            onChange={(value) => {
-                                                handleChange("email", { value });
-                                            }}
-                                            onValid={(isValid) => {
-                                                handleChange("email", { isValid });
-                                            }}
-                                            checkExists={true}
-                                            checkReverse={true}
-                                            disabled={sending || sended}
-                                        />
-                                    </div>
-
-                                    <div className="formRow noPadding">
-                                        <label htmlFor="email">Nouveau mot de passe</label>
-                                        <InputPassword
-                                            name="password"
-                                            id="password"
-                                            placeholder="choisissez un nouveau mot de passe"
-                                            autoComplete="off"
-                                            minLength={8}
-                                            testDigit={true}
-                                            testLowerCase={true}
-                                            testSpecialChar={true}
-                                            testUpperCase={true}
-                                            testMinLength={true}
-                                            reType={true}
-                                            validate={true}
-                                            value={formData.password.value}
-                                            onChange={(value) => {
-                                                handleChange("password", { value });
-                                            }}
-                                            onValid={(isValid) => {
-                                                handleChange("password", { isValid });
-                                            }}
-                                        />
-                                    </div>
-
-                                    <div className="formRow noPadding">
-                                        {sending ? (
-                                            <div className="spinner">
-                                                <BeatLoader size={16} />
-                                            </div>
-                                        ) : (
-                                            <input
-                                                type="submit"
-                                                value={"valider"}
-                                                title={"valider ma demande"}
-                                                disabled={
-                                                    api.httpError ||
-                                                    !formData.email.isValid ||
-                                                    formData.email.value === "" ||
-                                                    !formData.password.isValid ||
-                                                    !formData.token.isValid ||
-                                                    sending ||
-                                                    sended
-                                                }
-                                                ref={submitRef}
+                            <div className="colLeft shrink mobileHide">
+                                <AiOutlineLock size={192} />
+                            </div>
+                            <div className="colRight grow">
+                                <div className="formBox noMargin">
+                                    <form onSubmit={handleSubmit} className="lg">
+                                        <div className="formRow">
+                                            <label htmlFor="email">Adresse email du compte</label>
+                                            <InputEmail
+                                                name="email"
+                                                id="email"
+                                                placeholder="adresse email de connexion"
+                                                autoComplete="off"
+                                                value={formData.email.value}
+                                                onChange={(value) => {
+                                                    handleChange("email", { value });
+                                                }}
+                                                onValid={(isValid) => {
+                                                    handleChange("email", { isValid });
+                                                }}
+                                                checkExists={true}
+                                                checkReverse={true}
+                                                disabled={sending || sended}
                                             />
-                                        )}
-                                    </div>
-                                </form>
+                                        </div>
+
+                                        <div className="formRow">
+                                            <label htmlFor="email">Nouveau mot de passe</label>
+                                            <InputPassword
+                                                name="password"
+                                                id="password"
+                                                placeholder="choisissez un nouveau mot de passe"
+                                                autoComplete="off"
+                                                minLength={8}
+                                                testDigit={true}
+                                                testLowerCase={true}
+                                                testSpecialChar={true}
+                                                testUpperCase={true}
+                                                testMinLength={true}
+                                                reType={true}
+                                                validate={true}
+                                                value={formData.password.value}
+                                                onChange={(value) => {
+                                                    handleChange("password", { value });
+                                                }}
+                                                onValid={(isValid) => {
+                                                    handleChange("password", { isValid });
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="formRow">
+                                            {sending ? (
+                                                <div className="spinner">
+                                                    <BeatLoader size={16} />
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="submit"
+                                                    value={"valider"}
+                                                    title={"valider ma demande"}
+                                                    disabled={
+                                                        api.httpError ||
+                                                        !formData.email.isValid ||
+                                                        formData.email.value === "" ||
+                                                        !formData.password.isValid ||
+                                                        !formData.token.isValid ||
+                                                        sending ||
+                                                        sended
+                                                    }
+                                                    ref={submitRef}
+                                                />
+                                            )}
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </>

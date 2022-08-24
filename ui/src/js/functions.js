@@ -1,5 +1,7 @@
 const crypto = require("crypto");
 
+import env from "../../env.json";
+
 function isMdBreakpoint() {
     const result = window.matchMedia("(min-width: 768px)").matches;
     return result;
@@ -88,4 +90,8 @@ const securePassword = {
     }
 };
 
-module.exports = { isMdBreakpoint, capitalize, wait, getNowTs, getDelay, secondsToHuman, securePassword };
+function isValidToken(token) {
+    return token && token.length === env.TOKENS_LENGTH * 2 && /^[0-9a-fA-F]+$/.test(token);
+}
+
+module.exports = { isMdBreakpoint, capitalize, wait, getNowTs, getDelay, secondsToHuman, securePassword, isValidToken };
