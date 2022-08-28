@@ -1,15 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle, forwardRef, createRef, useEffect } from "react";
 
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from "react-icons/ai";
 
-export default function TabItemPanel({
-    title,
-    titleIcon = null,
-    initialOpepend = false,
-    closedTitle = null,
-    children
-}) {
+const TabItemPanel = forwardRef((props, ref) => {
+    const {
+        title,
+        titleIcon = null,
+        initialOpepend = false,
+        closedTitle = null,
+        onClosed = null,
+        onOpened = null,
+        children
+    } = props;
+
     const [opened, setOpened] = useState(initialOpepend);
+
+    const contentRef = createRef();
+
+    useImperativeHandle(ref, () => ({
+        open() {
+            setOpened(true);
+        },
+        close() {
+            setOpened(false);
+        },
+        toggle() {
+            setOpened((oldState) => !oldState);
+        }
+    }));
+
+    useEffect(() => {
+        if (opened && onOpened) onOpened();
+        if (!opened && onClosed) onClosed();
+    }, [opened]);
 
     return (
         <div className="tabItemPanel">
@@ -26,12 +49,16 @@ export default function TabItemPanel({
                     </div>
                     <h3>
                         {title}
-                        {!opened && closedTitle ? <span className="closedTitle">({closedTitle})</span> : null}
+                        {closedTitle ? <span className="closedTitle">({closedTitle})</span> : null}
                     </h3>
                 </div>
                 {opened && titleIcon}
             </div>
-            <div className={`tabItemContent ${opened ? "opened" : "closed"}`.trim()}>{children}</div>
+            <div className={`tabItemContent ${opened ? "opened" : "closed"}`.trim()} ref={contentRef}>
+                {children}
+            </div>
         </div>
     );
-}
+});
+
+export default TabItemPanel;

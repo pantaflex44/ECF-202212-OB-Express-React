@@ -285,6 +285,17 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
         }
     }
 
+    async function getAllRights() {
+        try {
+            const result = await httpClientAsync("get", "rights/all", {});
+            return result;
+        } catch (err) {
+            const e = new Error(err.message);
+            e.code = err.code;
+            throw e;
+        }
+    }
+
     return (
         <ApiContext.Provider
             value={{
@@ -299,7 +310,8 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
                 emailExists,
                 nameExists,
                 passwordLost,
-                newPassword
+                newPassword,
+                getAllRights
             }}
         >
             {children}

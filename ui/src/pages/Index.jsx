@@ -1,13 +1,13 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 
 import env from "../../env.json";
 
 import { ApiContext } from "../components/ApiProvider";
-import ProfileTabItem from "../components/ProfileTabItem";
-import PartnersTabItem from "../components/PartnersTabItem";
-import RightsTabItem from "../components/RightsTabItem";
-import StructuresTabItem from "../components/StructuresTabItem";
+import ProfileTab from "../components/ProfileTab";
+import PartnersTab from "../components/PartnersTab";
+import RightsTab from "../components/RightsTab";
+import StructuresTab from "../components/StructuresTab";
 
 import { BsPersonBoundingBox, BsHouse, BsDiagram3 } from "react-icons/bs";
 
@@ -15,6 +15,12 @@ export default function Index() {
     const [tabId, setTabId] = useState("profile");
 
     const api = useContext(ApiContext);
+
+    function selTab(id) {
+        api.setHttpError(null);
+
+        setTabId(id);
+    }
 
     return (
         <>
@@ -28,7 +34,7 @@ export default function Index() {
                     <div
                         className={`mainMenuItem ${tabId === "profile" ? "active" : ""}`.trim()}
                         onClick={() => {
-                            setTabId("profile");
+                            selTab("profile");
                         }}
                     >
                         <div className="mainMenuItemIcon">
@@ -42,7 +48,7 @@ export default function Index() {
                             <div
                                 className={`mainMenuItem ${tabId === "partners" ? "active" : ""}`.trim()}
                                 onClick={() => {
-                                    setTabId("partners");
+                                    selTab("partners");
                                 }}
                             >
                                 <div className="mainMenuItemIcon">
@@ -53,7 +59,7 @@ export default function Index() {
                             <div
                                 className={`mainMenuItem ${tabId === "rights" ? "active" : ""}`.trim()}
                                 onClick={() => {
-                                    setTabId("rights");
+                                    selTab("rights");
                                 }}
                             >
                                 <div className="mainMenuItemIcon">
@@ -68,7 +74,7 @@ export default function Index() {
                         <div
                             className={`mainMenuItem ${tabId === "structures" ? "active" : ""}`.trim()}
                             onClick={() => {
-                                setTabId("structures");
+                                selTab("structures");
                             }}
                         >
                             <div className="mainMenuItemIcon">
@@ -80,10 +86,10 @@ export default function Index() {
                 </div>
 
                 <div className="tabPage">
-                    {tabId === "profile" && <ProfileTabItem />}
-                    {tabId === "partners" && <PartnersTabItem />}
-                    {tabId === "rights" && <RightsTabItem />}
-                    {tabId === "structures" && <StructuresTabItem />}
+                    {tabId === "profile" && <ProfileTab currentAccount={{ ...api.currentUser.account }} />}
+                    {tabId === "partners" && <PartnersTab />}
+                    {tabId === "rights" && <RightsTab />}
+                    {tabId === "structures" && <StructuresTab />}
                 </div>
             </div>
         </>

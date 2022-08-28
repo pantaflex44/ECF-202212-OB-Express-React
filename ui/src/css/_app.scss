@@ -63,11 +63,11 @@ body {
     background-color: $white;
 
     #app {
-        /*display: grid;
-        grid-template-rows: auto 1fr auto;*/
+        position: relative;
 
         width: 100%;
         max-width: 1024px;
+        min-height: calc(100vh - 1em);
         margin-inline: auto;
         padding-inline: 1em;
     }
@@ -119,12 +119,14 @@ header {
 }
 
 main {
-    min-height: 80vh;
+    padding-bottom: 7em;
 }
 
 footer {
-    position: sticky;
+    position: absolute;
     bottom: 0;
+    left: 0;
+    right: 0;
 
     display: flex;
     flex-direction: row;
@@ -133,6 +135,7 @@ footer {
     align-items: center;
     gap: 1em;
 
+    padding-inline: 2em;
     padding-top: 1em;
     padding-bottom: 2em;
 
@@ -140,6 +143,7 @@ footer {
     font-weight: 200;
     font-size: clamp(0.7vmin, 1em, 0.65em);
     border-top: 1px solid $lightGray-800;
+    background-color: $white;
 
     a {
         text-decoration: underline;
@@ -256,8 +260,7 @@ footer {
     }
 
     h4 {
-        margin-top: 0;
-        margin-bottom: 1em;
+        margin: 0;
     }
 }
 
@@ -382,6 +385,15 @@ form {
         &.hze {
             justify-content: end;
         }
+
+        &.simpleHeight {
+            margin-block: 0;
+            padding-block: 0;
+        }
+
+        &.bdr {
+            border-bottom: 2px solid $white;
+        }
     }
 
     .formCol {
@@ -458,6 +470,10 @@ form {
 label {
     color: $dark-600;
     font-size: smaller;
+
+    &.notValidated {
+        color: $redAlertSecondary;
+    }
 }
 
 input:not([type="button"]):not([type="submit"]),
@@ -580,6 +596,24 @@ button {
 
         &:not(:disabled):hover {
             border: 1px solid $greenAlertSecondary;
+        }
+    }
+
+    &:not(:disabled).simple {
+        color: $secondaryColor;
+        background-color: $white;
+
+        &:not(:disabled):hover {
+            border: 1px solid $secondaryColor;
+        }
+    }
+
+    &:not(:disabled).primary {
+        background-color: $primaryColor;
+        color: $white;
+
+        &:not(:disabled):hover {
+            background-color: $secondaryColor;
         }
     }
 
@@ -756,18 +790,6 @@ textarea {
     align-items: center;
     gap: 0.5em;
 
-    &.disabled {
-        pointer-events: none;
-
-        .switch {
-            input:checked {
-                & + span {
-                    background: transparentize($primaryColor, 0.5);
-                }
-            }
-        }
-    }
-
     .switch {
         display: inline-block;
         position: relative;
@@ -791,7 +813,7 @@ textarea {
                 left: 0;
                 right: 0;
 
-                background: $lightGray-800;
+                background: $lightGray-700;
                 border-radius: 20px;
             }
 
@@ -818,6 +840,26 @@ textarea {
             }
             & + span:before {
                 left: 15px;
+            }
+        }
+    }
+
+    &.disabled {
+        pointer-events: none;
+
+        .switch {
+            cursor: default;
+
+            input {
+                & + span {
+                    background: $lightGray-800;
+                }
+            }
+
+            input:checked {
+                & + span {
+                    background: transparentize($primaryColor, 0.5);
+                }
             }
         }
     }
@@ -1066,65 +1108,155 @@ textarea {
     }
 }
 
-.tabItem {
-    position: relative;
-
+.tabPage {
     margin-top: 3em;
-    margin-bottom: 4em;
 
-    .tabItemPanel {
-        .tabItemTitle {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
-            align-items: baseline;
-            justify-content: space-between;
+    .tabItem {
+        position: relative;
 
-            margin-top: 0em;
-            margin-bottom: 0em;
+        margin-top: 1em;
+        margin-bottom: 4em;
 
-            .tabItemTitleDetails {
+        .tabItemPanel {
+            border-top: 1px solid $lightGray-800;
+
+            .tabItemTitle {
                 display: flex;
                 flex-direction: row;
                 flex-wrap: nowrap;
-                justify-content: flex-start;
-                align-items: center;
+                align-items: baseline;
+                justify-content: space-between;
                 gap: 0.5em;
 
-                cursor: pointer;
-                line-height: 1;
+                margin-top: 0em;
+                margin-bottom: 0em;
 
-                .tabItemTitleChevron {
-                    color: $secondaryColor;
-                }
+                .tabItemTitleDetails {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                    justify-content: flex-start;
+                    align-items: center;
+                    gap: 0.5em;
 
-                h3 {
-                    margin-bottom: 1.1em;
+                    cursor: pointer;
+                    line-height: 1;
 
-                    .closedTitle {
-                        margin-left: 1em;
+                    .tabItemTitleChevron {
+                        color: $secondaryColor;
+                    }
 
-                        font-weight: 100;
-                        font-size: smaller;
+                    h3 {
+                        margin-bottom: 1.1em;
+
+                        .closedTitle {
+                            margin-left: 1em;
+
+                            font-weight: 200;
+                            font-size: small;
+                        }
                     }
                 }
             }
+
+            .tabItemContent {
+                transform-origin: top;
+                overflow: hidden;
+
+                margin-bottom: 2em;
+
+                &.opened {
+                    transform: scaleY(1);
+                    height: auto;
+                }
+
+                &.closed {
+                    transform: scaleY(0);
+                    height: 0;
+                    margin-bottom: 0;
+                }
+            }
         }
+    }
+}
 
-        .tabItemContent {
-            transform-origin: top;
+.rightsList {
+    .rightRows {
+        padding-block: 1em;
+        padding-inline: 1em;
 
-            margin-bottom: 2em;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
 
-            &.opened {
-                transform: scaleY(1);
-                height: auto;
+        .rightRow {
+            &:not(:last-of-type) {
+                padding-bottom: 0.5em;
+
+                border-bottom: 1px solid $white;
             }
 
-            &.closed {
-                transform: scaleY(0);
-                height: 0;
-                margin-bottom: 0;
+            &.header {
+                padding: 0.5em;
+                margin-bottom: 1em;
+
+                border-radius: 8px;
+                background-color: $white;
+                text-align: center;
+                font-size: small;
+                font-weight: 300;
+                color: $lightGray-100;
+            }
+        }
+    }
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+
+    margin-block: 1em;
+    height: 2em;
+
+    font-weight: 300;
+
+    .toolbarSide {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5em;
+
+        span {
+            &.important {
+                color: $redAlertSecondary;
+            }
+        }
+
+        button {
+            font-weight: 500;
+            font-size: larger;
+
+            padding-block: 0.25em;
+            padding-inline: 0.5em;
+            justify-content: center;
+            gap: 0.25em;
+
+            width: auto;
+            min-width: 2em;
+            height: 2em;
+
+            & > span {
+                font-size: 0.6em;
+            }
+
+            &:active {
+                background-color: $lightGray-900;
             }
         }
     }

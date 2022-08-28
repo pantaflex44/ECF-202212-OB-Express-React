@@ -40,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/accounts", require("./controllers/accounts"));
+app.use("/api/rights", require("./controllers/rights"));
 
 const port = process.env.PORT || 3001;
 

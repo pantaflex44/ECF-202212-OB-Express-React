@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function TabItems({ children }) {
+export default function TabItem({ children }) {
     return <div className="tabItem">{children}</div>;
 }

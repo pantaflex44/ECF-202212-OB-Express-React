@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function StructuresTabItem() {
+export default function RightsTab() {
     return (
         <div className="tabItem">
             <div className="tabItemTitle">
-                <h3>Vos salles et structures</h3>
+                <h3>Modules et permissions</h3>
             </div>
         </div>
     );
