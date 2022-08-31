@@ -34,7 +34,18 @@ app.use(
     })
 );
 
-app.use(cors());
+app.use(
+    cors((req, callback) => {
+        let corsOptions = { methods: ["GET", "POST", "PUT", "DELETE"], credentials: true, optionsSuccessStatus: 200 };
+
+        if (["https://localhost:1234", "https://localhost:3000"].indexOf(req.header("Origin")) !== -1) {
+            corsOptions = { origin: true };
+        } else {
+            corsOptions = { origin: false };
+        }
+        callback(null, corsOptions);
+    })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());

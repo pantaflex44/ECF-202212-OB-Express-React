@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import PasswordLost from "./pages/PasswordLost";
 import NewPassword from "./pages/NewPassword";
 import Error404 from "./pages/Error404";
+import { GiConsoleController } from "react-icons/gi";
 
 function RoutesManager() {
     const api = useContext(ApiContext);

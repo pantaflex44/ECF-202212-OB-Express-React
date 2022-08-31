@@ -62,13 +62,14 @@ const toStructureAccountData = async (account) => {
  * @returns Clean account datas
  */
 const cleanAccount = (account) => {
-    const { active, is_admin, ...rest } = account;
+    const { active, is_admin, first_connexion, ...rest } = account;
 
     return {
         active: active === 1,
         is_admin: is_admin === 1,
         is_partner: is_admin === 0 && account.partner_id === 0,
         is_structure: is_admin === 0 && account.partner_id > 0,
+        first_connexion: first_connexion === 1,
         ...rest
     };
 };
@@ -151,7 +152,7 @@ const getAccounts = async (fn = null, order = "name", direction = "ASC", start =
     let accounts = [...rows];
     if (fn) accounts = fn(accounts);
 
-    accounts.map((account) => cleanAccount(account));
+    accounts = accounts.map((account) => cleanAccount(account));
 
     return accounts;
 };
@@ -175,14 +176,27 @@ const getPartner = async (partnerId) => {
  * @returns Array of account datas found.
  */
 const getPartners = async (order = "name", direction = "ASC", start = -1) => {
-    return await getAccounts(
-        (acs) => {
-            return acs.filter((a) => a.is_admin === 0 && a.partner_id === 0);
-        },
-        order,
-        direction,
-        start
+    availlableColumns = await getColumnNames("accounts");
+
+    const n = availlableColumns.includes(order.trim()) ? order.trim() : "name";
+    const d = direction.trim() === "ASC" ? direction.trim() : "DESC";
+    const orderQuery = `ORDER BY ${n} ${d}`;
+
+    const s = isNaN(parseInt(start)) ? -1 : parseInt(start);
+    const l = process.env.ITEMS_PER_PAGE;
+    const limitQuery = s > -1 ? `LIMIT ${l} OFFSET ${s}` : "";
+
+    const rows = emptyOrRows(
+        await query(`SELECT * FROM accounts WHERE is_admin = 0 AND partner_id = 0 ${orderQuery} ${limitQuery}`, {})
     );
+
+    if (rows.length < 1) return [];
+
+    let accounts = [...rows];
+
+    accounts = accounts.map((account) => cleanAccount(account));
+
+    return accounts;
 };
 
 /**

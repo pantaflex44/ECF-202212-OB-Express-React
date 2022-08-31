@@ -76,17 +76,41 @@ const securePassword = {
     },
 
     generate: function (length) {
-        return Array.apply(null, { length: length })
-            .map(function () {
-                var result;
-                while (true) {
-                    result = String.fromCharCode(this._getRandomByte());
-                    if (this._pattern.test(result)) {
-                        return result;
+        const make = () =>
+            Array.apply(null, { length: length })
+                .map(function () {
+                    var result;
+                    while (true) {
+                        result = String.fromCharCode(this._getRandomByte());
+                        if (this._pattern.test(result)) {
+                            return result;
+                        }
                     }
-                }
-            }, this)
-            .join("");
+                }, this)
+                .join("");
+
+        let password = make();
+
+        const hasLowerCase = (testValue) => new RegExp(`^(?=.*[a-z])`).test(testValue);
+        const hasUpperCase = (testValue) => new RegExp(`^(?=.*[A-Z])`).test(testValue);
+        const hasDigit = (testValue) => new RegExp(`^(?=.*[0-9])`).test(testValue);
+        const hasSpecialChar = (testValue) =>
+            new RegExp(
+                `^(?=.*[\\!\\@\\#\\$\\%\\^\\&\\*\\)\\(\\+\\=\\.\\<\\>\\{\\}\\[\\]\\:\\;\\'\\"\\|\\~\`\\_\\-])`
+            ).test(testValue);
+        const hasMinLength = (testValue) => new RegExp(`^(?=.{8,})`).test(testValue);
+        const isValid = (testValue) =>
+            hasLowerCase(testValue) &&
+            hasUpperCase(testValue) &&
+            hasDigit(testValue) &&
+            hasSpecialChar(testValue) &&
+            hasMinLength(testValue);
+
+        while (!isValid(password)) {
+            password = make();
+        }
+
+        return password;
     }
 };
 

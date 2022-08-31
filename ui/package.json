@@ -52,6 +52,7 @@
         "jest": "^28.1.3",
         "jest-transform-stub": "^2.0.0",
         "lodash.escaperegexp": "^4.1.2",
+        "os-browserify": "^0.3.0",
         "parcel": "^2.6.2",
         "path-browserify": "^1.0.1",
         "postcss-plugin": "^1.0.0",
@@ -81,7 +82,10 @@
         "serve": "node serve.js"
     },
     "babel": {
-        "presets": ["@parcel/babel-preset-env", "@babel/preset-react"]
+        "presets": [
+            "@parcel/babel-preset-env",
+            "@babel/preset-react"
+        ]
     },
     "jest": {
         "verbose": true,
@@ -91,7 +95,9 @@
         "transform": {
             "^.+\\.jsx?$": "babel-jest"
         },
-        "setupFilesAfterEnv": ["./tests.config.js"],
+        "setupFilesAfterEnv": [
+            "./tests.config.js"
+        ],
         "moduleNameMapper": {
             "\\.(css|less|scss)$": "jest-transform-stub",
             "\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "jest-transform-stub"

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 
 import { ApiContext } from "./ApiProvider";
 import Metas from "./Metas";
@@ -10,6 +10,13 @@ import { GiInvisible } from "react-icons/gi";
 
 export default function Header() {
     const api = useContext(ApiContext);
+
+    useEffect(() => {
+        const error = api?.httpError || null;
+        if (error && window) {
+            window.scrollTo(0, 0);
+        }
+    }, [api?.httpError]);
 
     return (
         <>

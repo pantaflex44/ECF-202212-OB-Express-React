@@ -1,7 +1,15 @@
 import React, { useState, useEffect, createRef, forwardRef, useImperativeHandle } from "react";
 
 const Switch = forwardRef((props, ref) => {
-    const { onChange = null, label = "", checked = false, readOnly = false, ...rest } = props;
+    const {
+        onChange = null,
+        label = "",
+        checked = false,
+        readOnly = false,
+        alert = false,
+        labelClassName = "",
+        ...rest
+    } = props;
     const [state, setState] = useState(checked);
 
     const switchRef = createRef();
@@ -27,7 +35,7 @@ const Switch = forwardRef((props, ref) => {
     }, [checked]);
 
     return (
-        <div className={`switchBox ${readOnly ? "disabled" : ""}`.trim()}>
+        <div className={`switchBox ${readOnly ? "disabled" : ""} ${alert ? "alert" : ""}`.trim()}>
             <label className="switch" htmlFor={rest.name}>
                 <input
                     name={rest.name}
@@ -42,7 +50,7 @@ const Switch = forwardRef((props, ref) => {
                 />
                 <span></span>
             </label>
-            <span>{label}</span>
+            <span className={labelClassName}>{label}</span>
         </div>
     );
 });

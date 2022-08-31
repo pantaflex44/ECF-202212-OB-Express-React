@@ -31,7 +31,7 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
 
         resetHttpError();
 
-        return data || "";
+        return data || response.status || "";
     }
 
     function httpClient(method, url, data = {}, callback = null, httpErrorCallback = null) {
@@ -43,7 +43,7 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
             headers = { ...headers, Authorization: `Bearer ${accessToken}` };
         }
 
-        if (method === "post") {
+        if (method !== "get") {
             headers = { ...headers, "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" };
 
             body = [];
@@ -62,6 +62,8 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
         })
             .then((response) => callback && callback(response))
             .catch((err) => {
+                console.error(err);
+
                 setHttpError({
                     code: 500,
                     message: "Une erreur critique est survenue. Veuillez recommencer ultérieurement."
@@ -113,6 +115,7 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
 
             const endConnection = () => {
                 logout();
+
                 clearInterval(interval);
             };
 
@@ -146,6 +149,8 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
 
     useEffect(() => {
         if (!httpError || !httpError.hasOwnProperty("code")) return;
+
+        console.error("HTTP Error", httpError);
 
         if (httpError.code === 401) logout();
 
@@ -201,7 +206,7 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
                     computeCredentials(data);
                 }
             },
-            () => {
+            (err) => {
                 logout();
             }
         );
@@ -296,6 +301,21 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
         }
     }
 
+    async function getPartners() {
+        try {
+            const partners = await httpClientAsync("get", "accounts/partners/all", {});
+            return partners;
+        } catch (err) {
+            const e = new Error(err.message);
+            e.code = err.code;
+            throw e;
+        }
+    }
+
+    async function updateAccount(account_id, changes = {}) {
+        return await httpClientAsync("put", "accounts", { account_id, ...changes });
+    }
+
     return (
         <ApiContext.Provider
             value={{
@@ -311,7 +331,9 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
                 nameExists,
                 passwordLost,
                 newPassword,
-                getAllRights
+                getAllRights,
+                getPartners,
+                updateAccount
             }}
         >
             {children}

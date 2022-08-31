@@ -126,7 +126,9 @@ router.put("/", authenticate, async (req, res = response) => {
     if (currentAuthAccount.is_admin) {
         const { account_id, ...body } = req.body;
 
-        const { account, error } = await getAccountFromId(accountId, null, true);
+        console.log(req.body);
+
+        const { account, error } = await getAccountFromId(account_id, null, true);
         if (account === null) return res.status(error.code).json({ message: error.message });
 
         const updated = await updateAccount(currentAuthAccount, account, body);
@@ -437,6 +439,40 @@ router.post("/nameexists", authenticate, async (req, res = response) => {
 
         const exists = await nameExists(name);
         return res.status(200).json({ exists });
+    }
+
+    return res.status(403).json({ message: "Account not allowed." });
+});
+
+/**
+ * GET /api/accounts/partners/
+ * Get partners list.
+ */
+router.get("/partners/:all?/:page?", authenticate, async (req, res = response) => {
+    const currentAuthAccount = req.auth.account;
+    if (currentAuthAccount.is_admin) {
+        const all = req.params.all || "";
+        const page = all === "all" ? 1 : req.params.page || 1;
+
+        let start = all === "all" ? 0 : page * process.env.ITEMS_PER_PAGE - process.env.ITEMS_PER_PAGE;
+
+        const previousPage = page > 1 ? page - 1 : page;
+        let ret = {
+            previousPage,
+            page,
+            itemsPerPage: process.env.ITEMS_PER_PAGE
+        };
+
+        let partners = await getPartners("name", "ASC", start);
+        const hasNextPage = all === "all" ? false : partners.length >= process.env.ITEMS_PER_PAGE;
+
+        if (all === "all") ret = { ...ret, itemsPerPage: partners.length };
+
+        return res.status(200).json({
+            ...ret,
+            nextPage: hasNextPage ? page + 1 : page,
+            partners
+        });
     }
 
     return res.status(403).json({ message: "Account not allowed." });

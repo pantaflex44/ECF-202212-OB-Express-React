@@ -34,6 +34,8 @@ $greenAlertSecondary: darkcyan;
 $primaryColor: #2c4b47;
 $secondaryColor: #4c6c68;
 
+$info: #dcdb69;
+
 *,
 *::before,
 *::after {
@@ -325,7 +327,8 @@ form {
     max-width: 400px;
     margin-inline: auto;
 
-    background-color: $lightGray-900;
+    background-color: transparentize($lightGray-900, 0.5);
+    border: 1px solid transparentize($lightGray-900, 0.5);
     border-radius: 8px;
 
     &.multiCol {
@@ -359,7 +362,6 @@ form {
 
         padding-block: 1em;
         padding-inline: 2em;
-        margin-block: 1em;
 
         display: flex;
         flex-direction: column;
@@ -393,6 +395,17 @@ form {
 
         &.bdr {
             border-bottom: 2px solid $white;
+        }
+
+        &:not(:first-of-type) {
+            &.bdr {
+                margin-top: 2em;
+                border-top: 2px solid $white;
+            }
+        }
+
+        &:not(&.bdr) {
+            margin-top: 1em;
         }
     }
 
@@ -477,7 +490,8 @@ label {
 }
 
 input:not([type="button"]):not([type="submit"]),
-textarea {
+textarea,
+select {
     background-color: transparent;
     color: $dark-900;
     font-size: normal;
@@ -500,6 +514,11 @@ textarea {
         font-weight: 100;
         font-size: smaller;
     }
+}
+
+select:not(:disabled) {
+    border-bottom: 1px solid $dark-200;
+    cursor: initial;
 }
 
 textarea {
@@ -870,6 +889,31 @@ textarea {
 
         color: $dark-600;
         font-size: smaller;
+
+        &.large {
+            color: inherit;
+            font-size: inherit;
+        }
+    }
+
+    &.alert {
+        .switch {
+            input:checked {
+                & + span {
+                    background: $redAlertPrimary;
+                }
+            }
+        }
+
+        &.disabled {
+            .switch {
+                input:checked {
+                    & + span {
+                        background: transparentize($redAlertPrimary, 0.5);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -877,6 +921,17 @@ textarea {
     font-size: smaller;
     margin-block: 0.5rem;
     text-align: right;
+
+    a {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5em;
+
+        cursor: pointer;
+    }
 }
 
 .userIcon {
@@ -1260,6 +1315,42 @@ textarea {
             }
         }
     }
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0.25em;
+    justify-content: center;
+    align-items: flex-start;
+
+    width: 100%;
+    padding: 1em;
+
+    color: $secondaryColor;
+    background-color: transparentize($lightGray-900, 0.5);
+    border: 1px solid transparentize($lightGray-900, 0.5);
+    border-radius: 8px;
+
+    font-size: smaller;
+
+    li {
+        list-style: square;
+        margin-left: 2em;
+
+        &.errorMessage {
+            color: $redAlertSecondary;
+        }
+
+        &.successMessage {
+            color: $greenAlertSecondary;
+        }
+    }
+}
+
+.info {
+    color: $info;
 }
 
 .blink {
