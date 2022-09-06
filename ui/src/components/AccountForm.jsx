@@ -318,11 +318,17 @@ export default function AccountForm({ account }) {
                 promises.push(api.updateAccount(currentData.id, saveState.changes));
             }
 
+            if (saveState.newPassword) {
+                promises.push(api.changePassword(saveState.newPassword.email, saveState.newPassword.password));
+            }
+
+            if (saveState.newActiveState) {
+                promises.push(api.activate(saveState.newActiveState.email, saveState.newActiveState.state));
+            }
+
             Promise.all(promises)
                 .then((results) => {
-                    if (results[0] !== 204) {
-                        savedOk = false;
-                    }
+                    for (const result of results) savedOk = savedOk && result === 204;
                 })
                 .catch((err) => {
                     savedOk = false;

@@ -316,6 +316,14 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
         return await httpClientAsync("put", "accounts", { account_id, ...changes });
     }
 
+    async function changePassword(email, password) {
+        return await httpClientAsync("post", "accounts/changepassword", { email, password });
+    }
+
+    async function activate(email, active) {
+        return await httpClientAsync("post", "accounts/activate", { email, active });
+    }
+
     return (
         <ApiContext.Provider
             value={{
@@ -333,7 +341,9 @@ const ApiProvider = ({ children, baseURL = env.API_BASEURL }) => {
                 newPassword,
                 getAllRights,
                 getPartners,
-                updateAccount
+                updateAccount,
+                changePassword,
+                activate
             }}
         >
             {children}
